@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片字幕生成器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>图片字幕生成器</h1>
+
+        <div class="controls">
+            <div class="control-row">
+                <label class="label">选择文件：</label>
+                <input type="file" id="file-input" accept="image/*">
+                <span id="file-name" class="file-name"></span>
+            </div>
+
+            <div class="control-row">
+                <label class="label">字幕高度(px)：</label>
+                <input type="number" id="bg-height" value="40" min="10" max="300" class="number-input">
+
+                <label class="label">字体大小(px)：</label>
+                <input type="number" id="font-size" value="20" min="10" max="120" class="number-input">
+
+                <label class="label">字体颜色：</label>
+                <input type="color" id="font-color" value="#FFFFFF" class="color-input">
+
+                <label class="label">轮廓颜色：</label>
+                <input type="color" id="stroke-color" value="#000000" class="color-input">
+            </div>
+
+            <div class="control-row">
+                <textarea id="subtitle-text" rows="6" placeholder="每一行将作为一行字幕"></textarea>
+            </div>
+
+            <div class="buttons">
+                <button id="generate-btn" class="primary">生成字幕图片</button>
+                <button id="save-btn" class="secondary">保存图片</button>
+            </div>
+        </div>
+
+        <div class="preview">
+            <canvas id="preview-canvas"></canvas>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

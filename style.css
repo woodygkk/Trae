@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 24px;
+}
+
+.container {
+    max-width: 1040px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+h1 {
+    margin: 0 0 16px;
+    font-size: 22px;
+    color: #222;
+}
+
+.controls {
+    margin-bottom: 16px;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.label {
+    color: #333;
+}
+
+.number-input {
+    width: 100px;
+    padding: 6px 8px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+}
+
+.color-input {
+    width: 44px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+}
+
+#file-input {
+    padding: 6px 8px;
+}
+
+.file-name {
+    color: #666;
+}
+
+#subtitle-text {
+    width: 100%;
+    min-height: 120px;
+    padding: 10px 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    resize: vertical;
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.buttons .primary,
+.buttons .secondary {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.buttons .primary {
+    background: #22c55e;
+    color: #fff;
+}
+
+.buttons .secondary {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.buttons .primary:hover { background: #16a34a; }
+.buttons .secondary:hover { background: #d1d5db; }
+
+.preview {
+    margin-top: 16px;
+    border: 1px dashed #d0d7de;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fafafa;
+}
+
+#preview-canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
