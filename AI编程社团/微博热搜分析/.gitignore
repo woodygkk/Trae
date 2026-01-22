@@ -1,8 +1,7 @@
-# Local ignores for Weibo Trend Analysis
 __pycache__/
-*.pyc
-dist/
 build/
-*.exe
+dist/
 *.spec
+*.pyc
 tmpclaude-*
+.DS_Store
