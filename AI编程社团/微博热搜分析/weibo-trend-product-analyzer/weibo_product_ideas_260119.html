@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微博热搜产品创意分析报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            position: relative;
+        }
+        .header-left {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .time-selector { position: relative; }
+        .time-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .time-btn:hover { background: rgba(255,255,255,0.3); }
+        .time-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            min-width: 200px;
+            display: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .time-dropdown.show { display: block; animation: fadeIn 0.2s ease; }
+        .time-dropdown-title {
+            background: #f8fafc;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #64748b;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .time-dropdown-list { max-height: 300px; overflow-y: auto; }
+        .time-option {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .time-option:hover { background: #f1f5f9; color: #667eea; }
+        .time-option.active { background: #eef2ff; color: #667eea; font-weight: 600; }
+        .time-option .date { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+        .header h1 { font-size: 32px; margin-bottom: 10px; }
+        .header-subtitle { opacity: 0.9; font-size: 16px; }
+        .stats { display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
+        .stat-item {
+            text-align: center;
+            background: rgba(255,255,255,0.15);
+            padding: 15px 25px;
+            border-radius: 12px;
+            min-width: 100px;
+        }
+        .stat-num { font-size: 28px; font-weight: bold; }
+        .stat-label { font-size: 12px; opacity: 0.9; margin-top: 5px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 25px 15px; }
+        .section-title { font-size: 20px; color: white; margin: 25px 0 15px; padding-left: 12px; border-left: 4px solid #667eea; display: flex; justify-content: space-between; align-items: center; }
+
+        .idea-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 70px 1fr 1fr 90px;
+            gap: 15px;
+            align-items: start;
+            border-left: 5px solid #10b981;
+            transition: all 0.3s ease;
+        }
+        .idea-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+
+        .rank-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .rank-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .rank-heat { font-size: 11px; color: #ef4444; font-weight: 600; text-align: center; }
+
+        .hot-col { padding-right: 15px; border-right: 1px solid #e5e7eb; }
+        .hot-col h3 { font-size: 16px; color: #1a1a2e; margin-bottom: 8px; font-weight: 700; }
+        .topic-tag {
+            display: inline-block;
+            background: #fef08a;
+            color: #854d0e;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .event-bg { color: #475569; font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+        .status-tag {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .tags-inline { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .tag { background: #e0e7ff; color: #4338ca; padding: 3px 10px; border-radius: 12px; font-size: 11px; }
+
+        .product-col { padding-right: 15px; border-right: 1px solid #e5e7eb; }
+        .product-name { font-size: 15px; font-weight: 700; color: #667eea; margin-bottom: 8px; }
+        .product-desc { color: #475569; font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+        .target-users { color: #64748b; font-size: 11px; margin-bottom: 6px; }
+        .monetization-mini { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .monetization-mini span { background: #ecfdf5; color: #065f46; padding: 3px 8px; border-radius: 6px; font-size: 10px; }
+
+        .score-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .score-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .score-detail-mini { width: 100%; }
+        .mini-score { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 10px; }
+        .mini-score-label { color: #6b7280; width: 30px; }
+        .mini-bar { flex: 1; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden; }
+        .mini-bar-fill { height: 100%; border-radius: 2px; }
+        .mini-bar-fill.interesting { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .mini-bar-fill.usefulness { background: linear-gradient(90deg, #10b981, #059669); }
+
+        .sort-controls { display: flex; justify-content: flex-end; }
+        .sort-btn {
+            padding: 10px 24px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        .sort-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .footer { text-align: center; padding: 30px 15px; color: rgba(255,255,255,0.5); font-size: 12px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .idea-card { animation: fadeIn 0.4s ease forwards; }
+
+        @media (max-width: 900px) {
+            .idea-card { grid-template-columns: 1fr; gap: 15px; }
+            .hot-col, .product-col { border-right: none; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; padding-right: 0; }
+            .score-col { flex-direction: row; justify-content: flex-start; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="time-selector">
+                <button class="time-btn" onclick="toggleDropdown()">
+                    <span>&#128339;</span>
+                    <span id="currentTime">2026-01-19</span>
+                    <span>&#9660;</span>
+                </button>
+                <div class="time-dropdown" id="timeDropdown">
+                    <div class="time-dropdown-title">选择历史报告</div>
+                    <div class="time-dropdown-list">
+                        <a href="weibo_product_ideas_260119.html" class="time-option active">
+                            2026-01-19
+                            <div class="date">10条热搜</div>
+                        </a>
+                        <a href="weibo_product_ideas_260118.html" class="time-option">
+                            2026-01-18
+                            <div class="date">查看历史报告</div>
+                        </a>
+                        <a href="weibo_product_ideas_260117.html" class="time-option">
+                            2026-01-17
+                            <div class="date">查看历史报告</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <h1>微博热搜产品创意分析报告</h1>
+            <p class="header-subtitle">分析时间：2026-01-19 | 数据来源：2026-01-19热搜榜</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-num">10</div>
+                <div class="stat-label">有效热搜</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color: #a7f3d0;">8</div>
+                <div class="stat-label">优秀创意</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">82+</div>
+                <div class="stat-label">平均评分</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">
+            <span>产品创意详情</span>
+            <div class="sort-controls">
+                <button class="sort-btn" onclick="toggleSort()">
+                    <span id="sortLabel">按热度排序</span>
+                    <span>&#8645;</span>
+                </button>
+            </div>
+        </h2>
+
+        <div id="card-list">
+            <div class="idea-card" style="background: linear-gradient(135deg, #f0f4ff, #e0e7ff); border-left-color: #667eea;">
+                <div class="rank-col"><span class="col-label">&#127942; 排名</span></div>
+                <div class="hot-col"><span class="col-label">&#128293; 热点资讯</span></div>
+                <div class="product-col"><span class="col-label">&#128161; 产品创意</span></div>
+                <div class="score-col"><span class="col-label">&#11088; 综合评分</span></div>
+            </div>
+
+            <!-- #1 云南地震 -->
+            <div class="idea-card" data-heat="999000" data-score="92">
+                <div class="rank-col">
+                    <div class="rank-badge">#1</div>
+                    <div class="rank-heat">&#128293; 99.9万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>云南巧家县5.1级地震</h3>
+                    <span class="topic-tag">云南巧家县5.1级地震</span>
+                    <p class="event-bg">云南昭通市巧家县发生5.1级地震，当地启动应急响应，救援队伍已赶赴现场，暂无人员伤亡报告。地震预警和应急响应机制受关注。</p>
+                    <span class="status-tag">应急响应期</span>
+                    <div class="tags-inline">
+                        <span class="tag">应急救援</span>
+                        <span class="tag">防灾减灾</span>
+                        <span class="tag">社区预警</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">地震预警+社区应急平台</div>
+                    <p class="product-desc">整合地震预警、社区互助和物资调配的一站式应急平台，震时快速疏散指引，灾后高效组织救援，提升社区应急能力。</p>
+                    <p class="target-users">&#128101; 地震多发区居民、社区管理者</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 政府采购</span>
+                        <span>&#128176; 企业订阅</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">92</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 90%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 95%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #2 iPhone18Pro -->
+            <div class="idea-card" data-heat="985000" data-score="88">
+                <div class="rank-col">
+                    <div class="rank-badge">#2</div>
+                    <div class="rank-heat">&#128293; 98.5万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>iPhone18Pro宣传片曝光</h3>
+                    <span class="topic-tag">iPhone18Pro宣传片曝光</span>
+                    <p class="event-bg">苹果发布iPhone18 Pro宣传视频，展示全新钛金属机身、全固态电池技术和超薄设计理念，引领行业新标准，引发果粉热议。</p>
+                    <span class="status-tag">科技热议期</span>
+                    <div class="tags-inline">
+                        <span class="tag">苹果</span>
+                        <span class="tag">手机</span>
+                        <span class="tag">科技创新</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">TechSpecs AI配件推荐引擎</div>
+                    <p class="product-desc">基于iPhone新特性智能匹配配件的AI助手，一键生成配件清单和购买方案，省去用户选购烦恼，提升购物体验。</p>
+                    <p class="target-users">&#128101; 苹果用户、科技爱好者</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 佣金分成</span>
+                        <span>&#128176; 会员订阅</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">88</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 85%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 90%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #3 苹果重回第一 -->
+            <div class="idea-card" data-heat="967000" data-score="85">
+                <div class="rank-col">
+                    <div class="rank-badge">#3</div>
+                    <div class="rank-heat">&#128293; 96.7万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>苹果重新夺回中国手机市场第一</h3>
+                    <span class="topic-tag">苹果重新夺回中国手机市场第一</span>
+                    <p class="event-bg">2025年Q4苹果在中国智能手机市场份额超越华为重夺第一，国产高端机面临激烈竞争，市场格局引发关注。</p>
+                    <span class="status-tag">市场热议期</span>
+                    <div class="tags-inline">
+                        <span class="tag">市场份额</span>
+                        <span class="tag">手机行业</span>
+                        <span class="tag">竞争分析</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">PhoneRank Pro手机选购助手</div>
+                    <p class="product-desc">根据用户需求和预算，智能对比各品牌手机优劣，提供个性化购买建议和市场趋势分析，辅助消费决策。</p>
+                    <p class="target-users">&#128101; 购机用户、手机发烧友</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 返利佣金</span>
+                        <span>&#128176; 测评分佣</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">85</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 80%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 88%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #4 A股调整 -->
+            <div class="idea-card" data-heat="945000" data-score="90">
+                <div class="rank-col">
+                    <div class="rank-badge">#4</div>
+                    <div class="rank-heat">&#128293; 94.5万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>A股迎重要调整</h3>
+                    <span class="topic-tag">A股迎重要调整</span>
+                    <p class="event-bg">证监会发布A股交易制度改革新规，涉及T+0试点、涨跌幅放宽和量化交易监管，投资者需密切关注政策影响。</p>
+                    <span class="status-tag">政策发布期</span>
+                    <div class="tags-inline">
+                        <span class="tag">A股</span>
+                        <span class="tag">交易制度</span>
+                        <span class="tag">投资</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">A股风向标政策解读投资助手</div>
+                    <p class="product-desc">实时解读A股政策变化，智能分析对不同板块的影响，提供投资建议和风险预警，助力投资者把握市场机遇。</p>
+                    <p class="target-users">&#128101; 散户投资者、机构分析师</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 会员订阅</span>
+                        <span>&#128176; 投顾服务</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">90</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 88%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 92%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #5 白血病早筛 -->
+            <div class="idea-card" data-heat="912000" data-score="89">
+                <div class="rank-col">
+                    <div class="rank-badge">#5</div>
+                    <div class="rank-heat">&#128293; 91.2万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>19岁男孩肚疼3天查出白血病</h3>
+                    <span class="topic-tag">19岁男孩肚疼3天查出白血病</span>
+                    <p class="event-bg">年轻患者肚疼就医查出急性白血病引发关注，专家提醒身体异常信号需早筛查，早发现早治疗重要性凸显。</p>
+                    <span class="status-tag">健康关注期</span>
+                    <div class="tags-inline">
+                        <span class="tag">健康</span>
+                        <span class="tag">早筛</span>
+                        <span class="tag">医疗科普</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">症状百科AI健康自检</div>
+                    <p class="product-desc">用户描述症状后AI进行初步分析和风险评估，提供就医建议和医院推荐，推动疾病早筛意识普及，提升健康管理能力。</p>
+                    <p class="target-users">&#128101; 普通用户、健康管理者</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 增值服务</span>
+                        <span>&#128176; 医院合作</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">89</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 88%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 90%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #6 潮宏基涨价 -->
+            <div class="idea-card" data-heat="898000" data-score="78">
+                <div class="rank-col">
+                    <div class="rank-badge">#6</div>
+                    <div class="rank-heat">&#128293; 89.8万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>潮宏基吊坠一夜涨了1.9万</h3>
+                    <span class="topic-tag">潮宏基吊坠一夜涨了1.9万</span>
+                    <p class="event-bg">潮宏基一款限量版吊坠因设计独特和材质稀缺，价格一夜之间暴涨1.9万元，珠宝投资和奢侈品保值话题受关注。</p>
+                    <span class="status-tag">投资热议期</span>
+                    <div class="tags-inline">
+                        <span class="tag">珠宝</span>
+                        <span class="tag">投资</span>
+                        <span class="tag">奢侈品</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">珠宝鉴价AI估值平台</div>
+                    <p class="product-desc">上传珠宝图片即可获得专业估值和投资建议，追踪二手市场价格走势，辅助买家做出明智决策，降低投资风险。</p>
+                    <p class="target-users">&#128101; 珠宝买家、二手交易用户</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 鉴定费</span>
+                        <span>&#128176; 交易佣金</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">78</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 75%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 80%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #7 金银铜投资 -->
+            <div class="idea-card" data-heat="876000" data-score="87">
+                <div class="rank-col">
+                    <div class="rank-badge">#7</div>
+                    <div class="rank-heat">&#128293; 87.6万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>金银大涨后下一个会是铜吗</h3>
+                    <span class="topic-tag">金银大涨后下一个会是铜吗</span>
+                    <p class="event-bg">黄金白银价格持续走高，投资者开始关注铜等工业金属走势，大宗商品市场迎来新一轮投资热潮，周期分析受关注。</p>
+                    <span class="status-tag">投资热议期</span>
+                    <div class="tags-inline">
+                        <span class="tag">贵金属</span>
+                        <span class="tag">大宗商品</span>
+                        <span class="tag">投资组合</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">金属周期智能投研工具</div>
+                    <p class="product-desc">追踪金银铜等大宗商品价格走势，AI分析供需关系和价格周期，提供投资时机建议和风险提示，辅助投资决策。</p>
+                    <p class="target-users">&#128101; 大宗商品投资者、产业从业者</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 数据订阅</span>
+                        <span>&#128176; 投研报告</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">87</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 85%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 88%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #8 冰雪经济 -->
+            <div class="idea-card" data-heat="854000" data-score="86">
+                <div class="rank-col">
+                    <div class="rank-badge">#8</div>
+                    <div class="rank-heat">&#128293; 85.4万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>做好冰雪文章总书记念兹在兹</h3>
+                    <span class="topic-tag">做好冰雪文章总书记念兹在兹</span>
+                    <p class="event-bg">国家领导人多次强调发展冰雪经济，各地积极响应政策，推动冰雪产业成为新的经济增长点，政策红利持续释放。</p>
+                    <span class="status-tag">政策红利期</span>
+                    <div class="tags-inline">
+                        <span class="tag">冰雪经济</span>
+                        <span class="tag">政策</span>
+                        <span class="tag">区域发展</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">冰雪创业通政策创业平台</div>
+                    <p class="product-desc">汇聚冰雪产业政策信息和创业机会，智能匹配补贴政策，为创业者提供一站式创业支持服务，把握政策红利。</p>
+                    <p class="target-users">&#128101; 创业者、投资者、招商部门</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 政府合作</span>
+                        <span>&#128176; 创业服务费</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">86</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 82%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 90%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #9 深圳垃圾山 -->
+            <div class="idea-card" data-heat="823000" data-score="84">
+                <div class="rank-col">
+                    <div class="rank-badge">#9</div>
+                    <div class="rank-heat">&#128293; 82.3万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>深圳封存20年垃圾山开挖</h3>
+                    <span class="topic-tag">深圳封存20年垃圾山开挖</span>
+                    <p class="event-bg">深圳启动封存20年的垃圾填埋场开挖工作，采用新技术进行分类处理，探索城市垃圾资源化利用新路径，环保创新受关注。</p>
+                    <span class="status-tag">环保创新期</span>
+                    <div class="tags-inline">
+                        <span class="tag">环保</span>
+                        <span class="tag">循环经济</span>
+                        <span class="tag">碳中和</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">碳路者个人碳足迹管理</div>
+                    <p class="product-desc">追踪个人日常行为的碳排放，提供减碳建议和激励，与垃圾分类回收体系打通获取碳积分奖励，推动低碳生活。</p>
+                    <p class="target-users">&#128101; 环保爱好者、低碳践行者</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; 碳交易</span>
+                        <span>&#128176; 企业合作</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">84</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 82%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 86%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #10 小红书治理 -->
+            <div class="idea-card" data-heat="798000" data-score="75">
+                <div class="rank-col">
+                    <div class="rank-badge">#10</div>
+                    <div class="rank-heat">&#128293; 79.8万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>小红书明确反对制造对立</h3>
+                    <span class="topic-tag">小红书明确反对制造对立</span>
+                    <p class="event-bg">小红书发布社区治理公告，明确反对制造性别对立和焦虑内容，倡导健康积极的社区氛围，社区治理话题受关注。</p>
+                    <span class="status-tag">治理公告期</span>
+                    <div class="tags-inline">
+                        <span class="tag">内容审核</span>
+                        <span class="tag">社区氛围</span>
+                        <span class="tag">用户粘性</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">社区健康度监测系统</div>
+                    <p class="product-desc">为内容平台提供社区氛围健康度监测服务，AI识别对立内容倾向，提供治理建议和预警机制，优化社区生态。</p>
+                    <p class="target-users">&#128101; 内容平台运营、社区管理者</p>
+                    <div class="monetization-mini">
+                        <span>&#128176; SaaS订阅</span>
+                        <span>&#128176; 定制服务</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">75</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 72%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 78%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>由 Claude Code 微博热搜产品创意分析技能生成</p>
+        <p style="margin-top: 5px; opacity: 0.7;">评分标准：有趣度(80%) + 有用度(20%) | 共10条有效热搜</p>
+    </div>
+
+    <script>
+        let currentSort = 'heat';
+
+        function toggleSort() {
+            currentSort = currentSort === 'heat' ? 'score' : 'heat';
+            const container = document.getElementById('card-list');
+            const cards = Array.from(document.querySelectorAll('.idea-card[data-heat]'));
+
+            cards.sort((a, b) => {
+                if (currentSort === 'heat') {
+                    return parseFloat(b.dataset.heat) - parseFloat(a.dataset.heat);
+                } else {
+                    return parseInt(b.dataset.score) - parseInt(a.dataset.score);
+                }
+            });
+
+            cards.forEach((card, index) => {
+                container.appendChild(card);
+                card.querySelector('.rank-badge').textContent = '#' + (index + 1);
+            });
+
+            document.getElementById('sortLabel').textContent =
+                currentSort === 'heat' ? '按热度排序' : '按评分排序';
+        }
+
+        function toggleDropdown() {
+            document.getElementById('timeDropdown').classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(event) {
+            const selector = document.querySelector('.time-selector');
+            if (!selector.contains(event.target)) {
+                document.getElementById('timeDropdown').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

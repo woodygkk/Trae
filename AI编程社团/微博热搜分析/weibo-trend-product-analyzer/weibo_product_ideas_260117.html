@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微博热搜产品创意分析报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            position: relative;
+        }
+        .header-left {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .time-selector { position: relative; }
+        .time-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .time-btn:hover { background: rgba(255,255,255,0.3); }
+        .time-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            min-width: 200px;
+            display: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .time-dropdown.show { display: block; animation: fadeIn 0.2s ease; }
+        .time-dropdown-title {
+            background: #f8fafc;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #64748b;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .time-dropdown-list { max-height: 300px; overflow-y: auto; }
+        .time-option {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .time-option:hover { background: #f1f5f9; color: #667eea; }
+        .time-option.active { background: #eef2ff; color: #667eea; font-weight: 600; }
+        .time-option .date { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+        .header h1 { font-size: 32px; margin-bottom: 10px; }
+        .header-subtitle { opacity: 0.9; font-size: 16px; }
+        .stats { display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
+        .stat-item {
+            text-align: center;
+            background: rgba(255,255,255,0.15);
+            padding: 15px 25px;
+            border-radius: 12px;
+            min-width: 100px;
+        }
+        .stat-num { font-size: 28px; font-weight: bold; }
+        .stat-label { font-size: 12px; opacity: 0.9; margin-top: 5px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 25px 15px; }
+        .section-title { font-size: 20px; color: white; margin: 25px 0 15px; padding-left: 12px; border-left: 4px solid #667eea; display: flex; justify-content: space-between; align-items: center; }
+
+        .idea-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 70px 1fr 1fr 90px;
+            gap: 15px;
+            align-items: start;
+            border-left: 5px solid #10b981;
+            transition: all 0.3s ease;
+        }
+        .idea-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+
+        .rank-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .rank-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .rank-heat { font-size: 11px; color: #ef4444; font-weight: 600; text-align: center; }
+
+        .hot-col { padding-right: 15px; border-right: 1px solid #e5e7eb; }
+        .hot-col h3 { font-size: 16px; color: #1a1a2e; margin-bottom: 8px; font-weight: 700; }
+        .topic-tag {
+            display: inline-block;
+            background: #fef08a;
+            color: #854d0e;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .event-bg { color: #475569; font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+        .status-tag {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .tags-inline { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .tag { background: #e0e7ff; color: #4338ca; padding: 3px 10px; border-radius: 12px; font-size: 11px; }
+
+        .product-col { padding-right: 15px; border-right: 1px solid #e5e7eb; }
+        .product-name { font-size: 15px; font-weight: 700; color: #667eea; margin-bottom: 8px; }
+        .product-desc { color: #475569; font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+        .target-users { color: #64748b; font-size: 11px; margin-bottom: 6px; }
+        .monetization-mini { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .monetization-mini span { background: #ecfdf5; color: #065f46; padding: 3px 8px; border-radius: 6px; font-size: 10px; }
+
+        .score-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .score-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .score-detail-mini { width: 100%; }
+        .mini-score { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 10px; }
+        .mini-score-label { color: #6b7280; width: 30px; }
+        .mini-bar { flex: 1; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden; }
+        .mini-bar-fill { height: 100%; border-radius: 2px; }
+        .mini-bar-fill.interesting { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .mini-bar-fill.usefulness { background: linear-gradient(90deg, #10b981, #059669); }
+
+        .sort-controls { display: flex; justify-content: flex-end; }
+        .sort-btn {
+            padding: 10px 24px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        .sort-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .footer { text-align: center; padding: 30px 15px; color: rgba(255,255,255,0.5); font-size: 12px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .idea-card { animation: fadeIn 0.4s ease forwards; }
+
+        @media (max-width: 900px) {
+            .idea-card { grid-template-columns: 1fr; gap: 15px; }
+            .hot-col, .product-col { border-right: none; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; padding-right: 0; }
+            .score-col { flex-direction: row; justify-content: flex-start; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="time-selector">
+                <button class="time-btn" onclick="toggleDropdown()">
+                    <span>🕒</span>
+                    <span id="currentTime">2026-01-17</span>
+                    <span>▼</span>
+                </button>
+                <div class="time-dropdown" id="timeDropdown">
+                    <div class="time-dropdown-title">选择历史报告</div>
+                    <div class="time-dropdown-list">
+                        <a href="weibo_product_ideas_260117.html" class="time-option active">
+                            2026-01-17
+                            <div class="date">10条热搜</div>
+                        </a>
+                        <a href="weibo_product_ideas_260116.html" class="time-option">
+                            2026-01-16
+                            <div class="date">查看历史报告</div>
+                        </a>
+                        <a href="weibo_product_ideas_260115.html" class="time-option">
+                            2026-01-15
+                            <div class="date">查看历史报告</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <h1>微博热搜产品创意分析报告</h1>
+            <p class="header-subtitle">分析时间：2026-01-17 | 数据来源：2025-01-17热搜榜</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-num">10</div>
+                <div class="stat-label">有效热搜</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color: #a7f3d0;">10</div>
+                <div class="stat-label">优秀创意</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">86+</div>
+                <div class="stat-label">平均评分</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">
+            <span>产品创意详情</span>
+            <div class="sort-controls">
+                <button class="sort-btn" onclick="toggleSort()">
+                    <span id="sortLabel">按热度排序</span>
+                    <span>⇅</span>
+                </button>
+            </div>
+        </h2>
+
+        <div id="card-list">
+            <div class="idea-card" style="background: linear-gradient(135deg, #f0f4ff, #e0e7ff); border-left-color: #667eea;">
+                <div class="rank-col"><span class="col-label">🏆 排名</span></div>
+                <div class="hot-col"><span class="col-label">🔥 热点资讯</span></div>
+                <div class="product-col"><span class="col-label">💡 产品创意</span></div>
+                <div class="score-col"><span class="col-label">⭐ 综合评分</span></div>
+            </div>
+
+            <!-- #1 王星被骗至缅甸 -->
+            <div class="idea-card" data-heat="950000" data-score="92">
+                <div class="rank-col">
+                    <div class="rank-badge">#1</div>
+                    <div class="rank-heat">🔥 95万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>公安机关公布王星被骗细节</h3>
+                    <span class="topic-tag">公安机关公布王星被骗至缅甸细节</span>
+                    <p class="event-bg">公安机关首次完整披露演员王星被骗至缅甸的全过程细节，揭露电诈犯罪团伙的精密套路。6名泰缅边境失联被困中国公民已安全回国，跨境电诈防范意识亟待提升。</p>
+                    <span class="status-tag">社会关注期</span>
+                    <div class="tags-inline">
+                        <span class="tag">电信诈骗</span>
+                        <span class="tag">缅北</span>
+                        <span class="tag">安全防范</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">跨境安全预警助手</div>
+                    <p class="product-desc">为出境人员提供一站式安全服务，包括目的地风险评估、常见诈骗套路识别、紧急求助一键报警、行程轨迹分享给家人等功能。结合AI识别可疑招聘信息，从源头预防被骗出境。</p>
+                    <p class="target-users">👥 出境务工者、留学生、商务出差人士</p>
+                    <div class="monetization-mini">
+                        <span>💰 保险服务</span>
+                        <span>💰 企业采购</span>
+                        <span>💰 政府合作</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">92</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 75%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 98%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #2 报废旧车补贴 -->
+            <div class="idea-card" data-heat="800000" data-score="90">
+                <div class="rank-col">
+                    <div class="rank-badge">#2</div>
+                    <div class="rank-heat">🔥 80万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>新能源车报废补贴升级</h3>
+                    <span class="topic-tag">报废旧车购买新能源车补贴2万元</span>
+                    <p class="event-bg">国家以旧换新政策再升级，报废旧车购买新能源汽车可获2万元补贴。政策利好持续释放，新能源车市场迎来新一轮换购热潮，消费者急需了解各地补贴细则和叠加优惠。</p>
+                    <span class="status-tag">政策红利期</span>
+                    <div class="tags-inline">
+                        <span class="tag">新能源车</span>
+                        <span class="tag">补贴政策</span>
+                        <span class="tag">以旧换新</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">汽车换购补贴计算器</div>
+                    <p class="product-desc">聚合全国各地汽车报废补贴、新能源补贴、地方购车补贴等政策信息。输入旧车信息和购买意向，自动计算可享受的最大补贴金额，推荐最优购车方案和经销商，一站式完成换购。</p>
+                    <p class="target-users">👥 换车用户、家庭购车、车主群体</p>
+                    <div class="monetization-mini">
+                        <span>💰 4S店导流</span>
+                        <span>💰 金融服务</span>
+                        <span>💰 品牌广告</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">90</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 78%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 96%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #3 中美网友聊嗨了 -->
+            <div class="idea-card" data-heat="750000" data-score="94">
+                <div class="rank-col">
+                    <div class="rank-badge">#3</div>
+                    <div class="rank-heat">🔥 75万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>中美网友跨平台交流持续升温</h3>
+                    <span class="topic-tag">中美网友聊嗨了</span>
+                    <p class="event-bg">TikTok禁令引发的跨境社交热潮持续发酵，中美网友在小红书等平台热情互动。外国网友亮出十八般武艺展示才艺，TikTok日活降至8220万，用户加速迁移至中国平台。</p>
+                    <span class="status-tag">文化交流期</span>
+                    <div class="tags-inline">
+                        <span class="tag">跨境社交</span>
+                        <span class="tag">TikTok</span>
+                        <span class="tag">文化交流</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">跨文化社交翻译助手</div>
+                    <p class="product-desc">专为中外网友交流设计的AI翻译工具，支持实时图文、语音、视频翻译。内置中西方文化差异解读、网络热梗互译、表情包跨语言转换等功能，让跨国社交真正无障碍。</p>
+                    <p class="target-users">👥 社交平台用户、留学生、跨国交友者</p>
+                    <div class="monetization-mini">
+                        <span>💰 会员订阅</span>
+                        <span>💰 API服务</span>
+                        <span>💰 广告推广</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">94</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 95%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 92%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #4 一箭三星 -->
+            <div class="idea-card" data-heat="700000" data-score="85">
+                <div class="rank-col">
+                    <div class="rank-badge">#4</div>
+                    <div class="rank-heat">🔥 70万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>我国再次成功发射一箭三星</h3>
+                    <span class="topic-tag">我国再次成功发射一箭三星</span>
+                    <p class="event-bg">中国航天再传捷报，成功实施一箭三星发射任务。航天科技持续突破，商业航天蓬勃发展，公众对航天科普和太空探索的兴趣日益高涨，航天教育市场潜力巨大。</p>
+                    <span class="status-tag">科技突破期</span>
+                    <div class="tags-inline">
+                        <span class="tag">航天</span>
+                        <span class="tag">卫星发射</span>
+                        <span class="tag">科技</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">航天科普互动平台</div>
+                    <p class="product-desc">打造沉浸式航天科普教育平台，提供火箭发射直播、卫星轨道追踪、太空任务进度可视化等功能。结合AR/VR技术让用户"身临其境"体验太空探索，激发青少年航天梦想。</p>
+                    <p class="target-users">👥 青少年、航天爱好者、科普教育机构</p>
+                    <div class="monetization-mini">
+                        <span>💰 课程付费</span>
+                        <span>💰 学校采购</span>
+                        <span>💰 品牌合作</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">85</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 90%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 78%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #5 荣耀CEO告别 -->
+            <div class="idea-card" data-heat="600000" data-score="86">
+                <div class="rank-col">
+                    <div class="rank-badge">#5</div>
+                    <div class="rank-heat">🔥 60万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>荣耀CEO赵明发告别文章</h3>
+                    <span class="topic-tag">荣耀CEO赵明内网发告别文章</span>
+                    <p class="event-bg">荣耀CEO赵明在内网发布告别文章，引发科技圈关注。企业高管变动是行业风向标，此次人事变动或将影响荣耀未来战略方向。科技行业人才流动和企业动态追踪需求旺盛。</p>
+                    <span class="status-tag">行业动态期</span>
+                    <div class="tags-inline">
+                        <span class="tag">荣耀</span>
+                        <span class="tag">科技行业</span>
+                        <span class="tag">高管变动</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">科技行业动态追踪器</div>
+                    <p class="product-desc">为科技从业者和投资者提供行业情报服务，实时追踪科技公司高管变动、融资动态、产品发布、专利布局等信息。AI智能分析行业趋势，帮助用户把握科技投资和求职机遇。</p>
+                    <p class="target-users">👥 科技从业者、投资人、猎头、求职者</p>
+                    <div class="monetization-mini">
+                        <span>💰 订阅会员</span>
+                        <span>💰 企业版</span>
+                        <span>💰 数据服务</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">86</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 72%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 92%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #6 高铁熊孩子 -->
+            <div class="idea-card" data-heat="550000" data-score="84">
+                <div class="rank-col">
+                    <div class="rank-badge">#6</div>
+                    <div class="rank-heat">🔥 55万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>高铁文明出行话题再引热议</h3>
+                    <span class="topic-tag">高铁上小孩吵闹男子一句话制服</span>
+                    <p class="event-bg">高铁上熊孩子吵闹被乘客一句话制服的视频走红，春运期间公共交通文明出行话题再度引发热议。如何在密闭空间维护公共秩序、家长如何管理儿童行为成为社会关注焦点。</p>
+                    <span class="status-tag">春运热议期</span>
+                    <div class="tags-inline">
+                        <span class="tag">高铁</span>
+                        <span class="tag">文明出行</span>
+                        <span class="tag">春运</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">儿童旅途陪伴APP</div>
+                    <p class="product-desc">专为长途出行家庭设计的儿童娱乐应用，提供离线动画片、益智游戏、有声故事、互动绘本等内容。帮助家长在高铁、飞机等密闭空间安抚孩子情绪，让旅途更和谐。</p>
+                    <p class="target-users">👥 带娃出行家长、旅行家庭、春运返乡人</p>
+                    <div class="monetization-mini">
+                        <span>💰 内容订阅</span>
+                        <span>💰 IP授权</span>
+                        <span>💰 广告</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">84</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 80%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 85%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #7 俄大使馆回应假冒商品 -->
+            <div class="idea-card" data-heat="500000" data-score="87">
+                <div class="rank-col">
+                    <div class="rank-badge">#7</div>
+                    <div class="rank-heat">🔥 50万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>假冒俄罗斯商品事件引关注</h3>
+                    <span class="topic-tag">俄大使馆回应假冒俄罗斯商品事件</span>
+                    <p class="event-bg">俄罗斯驻华大使馆公开回应市场上假冒俄罗斯商品泛滥问题，揭露多款"俄罗斯进口"食品实为国内生产。消费者对进口商品真伪鉴别需求强烈，跨境电商信任危机凸显。</p>
+                    <span class="status-tag">消费维权期</span>
+                    <div class="tags-inline">
+                        <span class="tag">进口商品</span>
+                        <span class="tag">假冒伪劣</span>
+                        <span class="tag">消费维权</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">进口商品溯源验真平台</div>
+                    <p class="product-desc">为消费者提供进口商品真伪鉴别服务，扫描商品条码即可查询原产地、进口报关单、检验检疫证明等信息。建立假冒商品黑名单数据库，帮助消费者避坑，让进口消费更放心。</p>
+                    <p class="target-users">👥 海淘用户、进口食品消费者、宝妈群体</p>
+                    <div class="monetization-mini">
+                        <span>💰 品牌认证</span>
+                        <span>💰 电商合作</span>
+                        <span>💰 会员服务</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">87</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 70%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 95%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #8 成都火锅店 -->
+            <div class="idea-card" data-heat="450000" data-score="88">
+                <div class="rank-col">
+                    <div class="rank-badge">#8</div>
+                    <div class="rank-heat">🔥 45万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>餐饮卫生安全问题曝光</h3>
+                    <span class="topic-tag">成都一火锅店员工在后厨小便属实</span>
+                    <p class="event-bg">成都某火锅店被曝员工在后厨小便，官方确认属实并进行处罚。餐饮卫生安全问题再次引发公众担忧，消费者对餐厅后厨透明化、卫生监管可视化的需求日益强烈。</p>
+                    <span class="status-tag">食安关注期</span>
+                    <div class="tags-inline">
+                        <span class="tag">餐饮卫生</span>
+                        <span class="tag">食品安全</span>
+                        <span class="tag">消费者权益</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">餐厅卫生透明监督平台</div>
+                    <p class="product-desc">聚合全国餐饮商户的卫生检查记录、后厨直播画面、消费者投诉信息等数据。用户就餐前可查询餐厅卫生评级，支持一键举报问题餐厅，推动餐饮行业卫生透明化。</p>
+                    <p class="target-users">👥 外出就餐人群、美食探店者、家长</p>
+                    <div class="monetization-mini">
+                        <span>💰 商家认证</span>
+                        <span>💰 点评合作</span>
+                        <span>💰 政府采购</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">88</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 65%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 98%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #9 发展冰雪产业 -->
+            <div class="idea-card" data-heat="400000" data-score="83">
+                <div class="rank-col">
+                    <div class="rank-badge">#9</div>
+                    <div class="rank-heat">🔥 40万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>冰雪产业迎来发展机遇</h3>
+                    <span class="topic-tag">发展冰雪产业丰富群众冰雪赛事活动</span>
+                    <p class="event-bg">国家大力推动冰雪产业发展，丰富群众冰雪赛事活动。冰雪旅游、冰雪运动装备、滑雪培训等细分市场迎来爆发式增长，后冬奥时代冰雪经济持续升温。</p>
+                    <span class="status-tag">产业发展期</span>
+                    <div class="tags-inline">
+                        <span class="tag">冰雪产业</span>
+                        <span class="tag">滑雪</span>
+                        <span class="tag">冬季运动</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">冰雪运动一站式服务平台</div>
+                    <p class="product-desc">整合全国滑雪场信息、雪道实时状况、装备租赁、教练预约、拼车组队等功能。为冰雪运动爱好者提供从出行到滑雪的全流程服务，降低冰雪运动参与门槛。</p>
+                    <p class="target-users">👥 滑雪爱好者、冬季旅游者、运动达人</p>
+                    <div class="monetization-mini">
+                        <span>💰 票务佣金</span>
+                        <span>💰 装备电商</span>
+                        <span>💰 教练服务</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">83</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 88%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 78%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #10 第一批回家过年 -->
+            <div class="idea-card" data-heat="350000" data-score="82">
+                <div class="rank-col">
+                    <div class="rank-badge">#10</div>
+                    <div class="rank-heat">🔥 35万+</div>
+                </div>
+                <div class="hot-col">
+                    <h3>第一批回家过年的人现状</h3>
+                    <span class="topic-tag">第一批回家过年的人现状</span>
+                    <p class="event-bg">春节临近，第一批返乡过年的人晒出回家现状引发共鸣。被催婚、被安排相亲、帮忙干农活等话题热议，过年回家的幸福与烦恼成为全民话题，返乡社交焦虑凸显。</p>
+                    <span class="status-tag">春节返乡期</span>
+                    <div class="tags-inline">
+                        <span class="tag">春节</span>
+                        <span class="tag">返乡</span>
+                        <span class="tag">过年</span>
+                    </div>
+                </div>
+                <div class="product-col">
+                    <div class="product-name">过年社交应对指南APP</div>
+                    <p class="product-desc">为返乡年轻人提供过年社交"求生指南"，包括应对催婚话术库、亲戚关系速查、红包金额参考、老家方言速成等功能。用幽默方式化解过年焦虑，让回家过年更从容。</p>
+                    <p class="target-users">👥 返乡年轻人、北漂沪漂、单身青年</p>
+                    <div class="monetization-mini">
+                        <span>💰 会员解锁</span>
+                        <span>💰 品牌植入</span>
+                        <span>💰 电商导购</span>
+                    </div>
+                </div>
+                <div class="score-col">
+                    <div class="score-circle">82</div>
+                    <div class="score-detail-mini">
+                        <div class="mini-score">
+                            <span class="mini-score-label">有趣</span>
+                            <div class="mini-bar"><div class="mini-bar-fill interesting" style="width: 92%"></div></div>
+                        </div>
+                        <div class="mini-score">
+                            <span class="mini-score-label">有用</span>
+                            <div class="mini-bar"><div class="mini-bar-fill usefulness" style="width: 72%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>由 Claude Code 微博热搜产品创意分析技能生成</p>
+        <p style="margin-top: 5px; opacity: 0.7;">评分标准：有趣度(80%) + 有用度(20%) | 共10条有效热搜</p>
+    </div>
+
+    <script>
+        let currentSort = 'heat';
+
+        function toggleSort() {
+            currentSort = currentSort === 'heat' ? 'score' : 'heat';
+            const container = document.getElementById('card-list');
+            const cards = Array.from(document.querySelectorAll('.idea-card[data-heat]'));
+
+            cards.sort((a, b) => {
+                if (currentSort === 'heat') {
+                    return parseFloat(b.dataset.heat) - parseFloat(a.dataset.heat);
+                } else {
+                    return parseInt(b.dataset.score) - parseInt(a.dataset.score);
+                }
+            });
+
+            cards.forEach((card, index) => {
+                container.appendChild(card);
+                card.querySelector('.rank-badge').textContent = '#' + (index + 1);
+            });
+
+            document.getElementById('sortLabel').textContent =
+                currentSort === 'heat' ? '按热度排序' : '按评分排序';
+        }
+
+        function toggleDropdown() {
+            document.getElementById('timeDropdown').classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(event) {
+            const selector = document.querySelector('.time-selector');
+            if (!selector.contains(event.target)) {
+                document.getElementById('timeDropdown').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
