@@ -1,0 +1,1050 @@
+/<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微博热搜产品创意分析报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 32px; margin-bottom: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .header p { opacity: 0.95; font-size: 15px; margin-bottom: 5px; }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            text-align: center;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 120px;
+        }
+        .stat-num { font-size: 36px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .stat-label { font-size: 13px; opacity: 0.9; margin-top: 5px; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+
+        .distribution {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 50px;
+            padding: 40px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .dist-item { text-align: center; }
+        .dist-bar-wrapper { height: 120px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 12px; }
+        .dist-bar {
+            width: 70px;
+            background: linear-gradient(180deg, #10b981, #059669);
+            border-radius: 8px 8px 0 0;
+            transition: height 0.5s ease;
+        }
+        .dist-good { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+        .dist-normal { background: linear-gradient(180deg, #9ca3af, #6b7280); }
+        .dist-label { font-weight: 600; color: #374151; }
+
+        .section-title {
+            font-size: 22px;
+            color: white;
+            margin: 35px 0 20px;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .idea-card {
+            background: rgba(255,255,255,0.98);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .idea-card:hover { transform: translateY(-4px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+
+        .excellent { border-left: 6px solid #10b981; background: linear-gradient(to right, #ecfdf5, white); }
+        .excellent::before { content: "★"; position: absolute; top: 15px; right: 20px; font-size: 24px; color: #10b981; }
+        .good { border-left: 6px solid #3b82f6; background: linear-gradient(to right, #eff6ff, white); }
+        .normal { border-left: 6px solid #9ca3af; background: #fafafa; }
+
+        .idea-header { display: flex; align-items: center; margin-bottom: 15px; padding-right: 50px; position: relative; }
+        .rank-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .idea-header h3 { font-size: 22px; color: #1a1a2e; font-weight: 700; flex: 1; }
+
+        .score-badge {
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .score-excellent { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+
+        .topic-info {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .topic-label { color: #6b7280; font-size: 14px; }
+        .topic-value { color: #1e293b; font-weight: 600; font-size: 15px; }
+        .heat-value { margin-left: auto; color: #ef4444; font-weight: 600; }
+
+        .section { margin-bottom: 18px; }
+        .section h4 { font-size: 16px; color: #1e293b; margin-bottom: 10px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .section-subtitle { font-size: 13px; color: #6b7280; margin: 15px 0 8px; font-weight: 500; }
+        .background-text { color: #475569; font-size: 14px; line-height: 1.8; }
+        .status-badge { display: inline-block; background: #fef3c7; color: #92400e; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+
+        .timeline { padding-left: 20px; }
+        .timeline li { margin-bottom: 8px; color: #475569; font-size: 14px; position: relative; padding-left: 15px; }
+        .timeline li::before { content: "•"; position: absolute; left: 0; color: #667eea; font-weight: bold; }
+
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { background: #e0e7ff; color: #4338ca; padding: 5px 12px; border-radius: 15px; font-size: 13px; }
+
+        .divider { border: none; border-top: 1px dashed #e5e7eb; margin: 20px 0; }
+
+        .score-detail { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .score-item { display: flex; align-items: center; gap: 15px; }
+        .score-label { width: 60px; font-size: 14px; color: #6b7280; }
+        .score-bar-container { flex: 1; height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; }
+        .score-bar { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        .interesting-bar { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .usefulness-bar { background: linear-gradient(90deg, #10b981, #059669); }
+        .score-value { width: 50px; text-align: right; font-size: 14px; font-weight: 600; color: #374151; }
+
+        .product-section { background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .product-name { font-size: 20px; font-weight: 700; color: #667eea; margin-bottom: 15px; }
+        .features-list { padding-left: 20px; margin-bottom: 15px; }
+        .features-list li { margin-bottom: 6px; color: #475569; }
+        .target-users { color: #475569; font-size: 14px; margin-bottom: 10px; }
+        .reason-text { color: #64748b; font-size: 14px; line-height: 1.7; background: #fff; padding: 12px; border-radius: 8px; border-left: 3px solid #667eea; }
+
+        .monetization-section { background: linear-gradient(135deg, #ecfdf5, #d1fae5); padding: 15px 20px; border-radius: 12px; }
+        .monetization-section h4 { color: #065f46; }
+        .monetization-list { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; }
+        .monetization-list li { background: white; padding: 8px 14px; border-radius: 8px; font-size: 13px; color: #065f46; display: flex; align-items: center; gap: 6px; }
+        .money-icon { font-size: 16px; }
+
+        .footer { text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.6); font-size: 13px; }
+        .footer a { color: #667eea; text-decoration: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .idea-card { animation: fadeIn 0.5s ease forwards; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>微博热搜产品创意分析报告</h1>
+        <p>分析时间：2026-01-14 22:57:33</p>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-num">10</div>
+                <div class="stat-label">热搜总数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color: #a7f3d0;">10</div>
+                <div class="stat-label">优秀创意</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color: #93c5fd;">0</div>
+                <div class="stat-label">良好创意</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" style="color: #d1d5db;">0</div>
+                <div class="stat-label">普通创意</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">评分分布</h2>
+        
+    <div class="distribution">
+        <div class="dist-item">
+            <div class="dist-bar-wrapper">
+                <div class="dist-bar" style="height: 300px"></div>
+            </div>
+            <span class="dist-label">优秀(10)</span>
+        </div>
+        <div class="dist-item">
+            <div class="dist-bar-wrapper">
+                <div class="dist-bar dist-good" style="height: 20px"></div>
+            </div>
+            <span class="dist-label">良好(0)</span>
+        </div>
+        <div class="dist-item">
+            <div class="dist-bar-wrapper">
+                <div class="dist-bar dist-normal" style="height: 20px"></div>
+            </div>
+            <span class="dist-label">普通(0)</span>
+        </div>
+    </div>
+    
+
+        <h2 class="section-title">产品创意详情</h2>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#1</div>
+                <h3>公考通</h3>
+                <span class="score-badge score-excellent">优秀 · 99分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">国考成绩</span>
+                <span class="heat-value">热度: 1,306,707</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">2026年国家公务员考试笔试成绩陆续公布，考生们开始查询成绩并准备面试环节。国考作为每年最受关注的公务员考试之一，竞争激烈程度逐年上升。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>2025年11月：国考笔试举行</li><li>2025年12月：笔试成绩查询开启</li><li>2026年1月：面试公告发布，考生准备面试</li><li>2026年2-4月：各部委陆续组织面试</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">成绩查询高峰期，面试准备阶段</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>笔试分数线</span>, <span class='tag'>面试技巧</span>, <span class='tag'>岗位竞争比</span>, <span class='tag'>备考经验分享</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>备考学生</span>, <span class='tag'>培训机构</span>, <span class='tag'>人事部门</span>, <span class='tag'>各大高校</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 100.0%"></div>
+                    </div>
+                    <span class="score-value">80/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 95.0%"></div>
+                    </div>
+                    <span class="score-value">19/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">公考通</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>笔试成绩快速查询和对比</li><li>智能面试模拟和点评</li><li>岗位竞争比分析</li><li>备考计划和进度管理</li><li>历年真题和解析</li><li>考生经验社区</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">备考公务员/事业单位的考生群体</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">国考是年度重大考试，备考周期长、需求刚性。用户需要成绩查询、面试准备、岗位选择等一站式服务。产品可切入面试培训、资料付费、会员服务等变现路径。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>面试培训班</li><li><span class='money-icon'>💰</span>付费真题</li><li><span class='money-icon'>💰</span>VIP会员</li><li><span class='money-icon'>💰</span>岗位内推服务</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#2</div>
+                <h3>价格卫士</h3>
+                <span class="score-badge score-excellent">优秀 · 94分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">携程涉嫌垄断</span>
+                <span class="heat-value">热度: 856,501</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">有用户或机构指控携程在在线旅游市场存在垄断行为，引发监管部门关注和公众讨论。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>用户投诉：价格歧视、大数据杀熟</li><li>媒体报道：平台规则争议</li><li>监管部门：启动调查程序</li><li>携程回应：调整相关政策</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">舆论发酵中，等待官方调查结果</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>平台责任</span>, <span class='tag'>消费者权益</span>, <span class='tag'>价格透明</span>, <span class='tag'>监管政策</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>携程平台</span>, <span class='tag'>消费者</span>, <span class='tag'>监管部门</span>, <span class='tag'>竞争对手</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 95.0%"></div>
+                    </div>
+                    <span class="score-value">76/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 90.0%"></div>
+                    </div>
+                    <span class="score-value">18/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">价格卫士</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>机票酒店价格监控和提醒</li><li>历史价格查询和对比</li><li>大数据杀熟检测</li><li>比价和最优推荐</li><li>用户评价聚合</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">经常出差和旅行的用户、价格敏感型消费者</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">携程垄断争议反映出用户对价格透明的需求强烈。该产品可以帮助用户避免大数据杀熟，节省旅行开支，具有明确的使用价值和付费意愿。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>会员订阅</li><li><span class='money-icon'>💰</span>返利分成</li><li><span class='money-icon'>💰</span>广告推广</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#3</div>
+                <h3>政策解读官</h3>
+                <span class="score-badge score-excellent">优秀 · 93分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">8图看经济工作8大重点任务攻坚</span>
+                <span class="heat-value">热度: 669,033</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">政府发布年度经济工作重点任务，涵盖8大攻坚方向，为全年经济发展指明方向。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>中央经济工作会议召开</li><li>8大重点任务发布</li><li>各部委解读政策</li><li>地方政府响应落实</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">政策解读和传播阶段</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>政策红利</span>, <span class='tag'>投资机会</span>, <span class='tag'>行业发展方向</span>, <span class='tag'>民生影响</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>政府部门</span>, <span class='tag'>企业</span>, <span class='tag'>投资者</span>, <span class='tag'>普通民众</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 95.0%"></div>
+                    </div>
+                    <span class="score-value">76/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 85.0%"></div>
+                    </div>
+                    <span class="score-value">17/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">政策解读官</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>经济政策通俗解读</li><li>投资机会挖掘</li><li>行业影响分析</li><li>个人应对建议</li><li>专家直播解读</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">投资者、企业主、关注财经的个人用户</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">经济政策与每个人息息相关，但原文晦涩难懂。用户需要通俗化的解读和实操建议。产品可以切入知识付费、专家咨询等变现路径。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>付费解读</li><li><span class='money-icon'>💰</span>专家咨询</li><li><span class='money-icon'>💰</span>课程销售</li><li><span class='money-icon'>💰</span>投资推荐</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#4</div>
+                <h3>追星小助手</h3>
+                <span class="score-badge score-excellent">优秀 · 94分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">花海晒聊天记录</span>
+                <span class="heat-value">热度: 564,377</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">某明星或网红在社交平台分享与恋人的聊天记录（'花海'相关话题），引发粉丝和网友热议。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>当事人发布聊天记录截图</li><li>网友扒出更多细节</li><li>粉丝反应两极分化</li><li>媒体跟进报道</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">话题热度持续发酵</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>明星恋情</span>, <span class='tag'>隐私保护</span>, <span class='tag'>网络暴力</span>, <span class='tag'>粉丝文化</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>当事人</span>, <span class='tag'>粉丝群体</span>, <span class='tag'>媒体</span>, <span class='tag'>网友</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 100.0%"></div>
+                    </div>
+                    <span class="score-value">80/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 70.0%"></div>
+                    </div>
+                    <span class="score-value">14/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">追星小助手</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>明星动态实时推送</li><li>粉丝社区互动</li><li>周边产品购买</li><li>行程和活动提醒</li><li>高清图包和资源</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">粉丝群体、追星族</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">粉丝经济规模庞大，用户愿意为偶像相关内容付费。产品可以聚合粉丝需求，提供一站式服务，变现路径清晰。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>周边商城</li><li><span class='money-icon'>💰</span>会员特权</li><li><span class='money-icon'>💰</span>打赏</li><li><span class='money-icon'>💰</span>付费内容</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#5</div>
+                <h3>美食侦探</h3>
+                <span class="score-badge score-excellent">优秀 · 94分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">代旭 我是配角怎敢吃醋</span>
+                <span class="heat-value">热度: 0</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">演员代旭在采访或综艺中谈及感情观，说出'我是配角怎敢吃醋'等金句，引发热议。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>采访/综艺播出</li><li>金句被截图传播</li><li>网友二创和玩梗</li><li>相关作品受关注</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">话题传播扩散期</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>演员作品</span>, <span class='tag'>感情观讨论</span>, <span class='tag'>金句二创</span>, <span class='tag'>明星效应</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>代旭</span>, <span class='tag'>粉丝</span>, <span class='tag'>影视作品</span>, <span class='tag'>综艺平台</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 97.5%"></div>
+                    </div>
+                    <span class="score-value">78/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 80.0%"></div>
+                    </div>
+                    <span class="score-value">16/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">美食侦探</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>附近美食推荐</li><li>网红店打卡攻略</li><li>美食博主推荐</li><li>避雷和真实评价</li><li>食谱教程和热量计算</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">美食爱好者、社交分享型用户、健康饮食人群</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">美食是社交货币，用户喜欢分享和种草。产品可以聚合餐厅推荐和用户评价，变现路径包括广告、会员、优惠券等。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>商家推广</li><li><span class='money-icon'>💰</span>会员优惠</li><li><span class='money-icon'>💰</span>外卖返利</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#6</div>
+                <h3>校园安全卫士</h3>
+                <span class="score-badge score-excellent">优秀 · 91分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">河南一教师与学生发生不正当关系</span>
+                <span class="heat-value">热度: 419,609</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">河南某学校教师被曝与学生发生不正当关系，引发社会对师德师风和校园安全的关注。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>事件被曝光</li><li>教育部门介入调查</li><li>涉事教师被处理</li><li>学校加强管理</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">调查处理阶段</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>师德规范</span>, <span class='tag'>校园安全</span>, <span class='tag'>未成年人保护</span>, <span class='tag'>监管责任</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>涉事教师</span>, <span class='tag'>学生家长</span>, <span class='tag'>教育部门</span>, <span class='tag'>学校</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 90.0%"></div>
+                    </div>
+                    <span class="score-value">72/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 95.0%"></div>
+                    </div>
+                    <span class="score-value">19/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">校园安全卫士</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>校园安全事件预警</li><li>教师资质查询</li><li>学校评价和口碑</li><li>家长社区交流</li><li>维权帮助和指引</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">学生家长、教育工作者、关心教育的公众</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">校园安全和师德问题是社会痛点，家长需要了解学校和教师的真实情况。产品可以提供透明信息，建立信任，变现路径包括学校认证费、家长会员等。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>学校认证费</li><li><span class='money-icon'>💰</span>家长会员</li><li><span class='money-icon'>💰</span>广告合作</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#7</div>
+                <h3>霸王茶姬热点通</h3>
+                <span class="score-badge score-excellent">优秀 · 82分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">霸王茶姬抹茶新品 携盏问东方</span>
+                <span class="heat-value">热度: 0</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">话题'霸王茶姬抹茶新品 携盏问东方'登上微博热搜，引发网友广泛关注和讨论。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>话题首次出现</li><li>热度快速上升</li><li>引发广泛讨论</li><li>形成舆论热点</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">话题传播期</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>事件真相</span>, <span class='tag'>各方观点</span>, <span class='tag'>后续发展</span>, <span class='tag'>社会影响</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>当事人</span>, <span class='tag'>网友</span>, <span class='tag'>媒体</span>, <span class='tag'>相关部门</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 85.0%"></div>
+                    </div>
+                    <span class="score-value">68/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 70.0%"></div>
+                    </div>
+                    <span class="score-value">14/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">霸王茶姬热点通</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>热点话题聚合</li><li>事件脉络梳理</li><li>各方观点整理</li><li>深度分析和预测</li><li>相关资源链接</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">关注该领域的用户群体、信息爱好者</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">基于话题'霸王茶姬抹茶新品 携盏问东方'的热点追踪和分析工具，帮助用户快速了解事件全貌和各方观点。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>付费深度分析</li><li><span class='money-icon'>💰</span>广告</li><li><span class='money-icon'>💰</span>会员服务</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#8</div>
+                <h3>27岁男热点通</h3>
+                <span class="score-badge score-excellent">优秀 · 84分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">27岁男子订婚后才知女友快40岁</span>
+                <span class="heat-value">热度: 417,220</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">话题'27岁男子订婚后才知女友快40岁'登上微博热搜，引发网友广泛关注和讨论。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>话题首次出现</li><li>热度快速上升</li><li>引发广泛讨论</li><li>形成舆论热点</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">话题传播期</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>事件真相</span>, <span class='tag'>各方观点</span>, <span class='tag'>后续发展</span>, <span class='tag'>社会影响</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>当事人</span>, <span class='tag'>网友</span>, <span class='tag'>媒体</span>, <span class='tag'>相关部门</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 87.5%"></div>
+                    </div>
+                    <span class="score-value">70/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 70.0%"></div>
+                    </div>
+                    <span class="score-value">14/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">27岁男热点通</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>热点话题聚合</li><li>事件脉络梳理</li><li>各方观点整理</li><li>深度分析和预测</li><li>相关资源链接</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">关注该领域的用户群体、信息爱好者</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">基于话题'27岁男子订婚后才知女友快40岁'的热点追踪和分析工具，帮助用户快速了解事件全貌和各方观点。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>付费深度分析</li><li><span class='money-icon'>💰</span>广告</li><li><span class='money-icon'>💰</span>会员服务</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#9</div>
+                <h3>公考通</h3>
+                <span class="score-badge score-excellent">优秀 · 96分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">申论分好低</span>
+                <span class="heat-value">热度: 412,724</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">2026年国家公务员考试笔试成绩陆续公布，考生们开始查询成绩并准备面试环节。国考作为每年最受关注的公务员考试之一，竞争激烈程度逐年上升。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>2025年11月：国考笔试举行</li><li>2025年12月：笔试成绩查询开启</li><li>2026年1月：面试公告发布，考生准备面试</li><li>2026年2-4月：各部委陆续组织面试</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">成绩查询高峰期，面试准备阶段</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>笔试分数线</span>, <span class='tag'>面试技巧</span>, <span class='tag'>岗位竞争比</span>, <span class='tag'>备考经验分享</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>备考学生</span>, <span class='tag'>培训机构</span>, <span class='tag'>人事部门</span>, <span class='tag'>各大高校</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 96.25%"></div>
+                    </div>
+                    <span class="score-value">77/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 95.0%"></div>
+                    </div>
+                    <span class="score-value">19/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">公考通</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>笔试成绩快速查询和对比</li><li>智能面试模拟和点评</li><li>岗位竞争比分析</li><li>备考计划和进度管理</li><li>历年真题和解析</li><li>考生经验社区</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">备考公务员/事业单位的考生群体</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">国考是年度重大考试，备考周期长、需求刚性。用户需要成绩查询、面试准备、岗位选择等一站式服务。产品可切入面试培训、资料付费、会员服务等变现路径。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>面试培训班</li><li><span class='money-icon'>💰</span>付费真题</li><li><span class='money-icon'>💰</span>VIP会员</li><li><span class='money-icon'>💰</span>岗位内推服务</li></ul>
+            </div>
+        </div>
+        
+        <div class="idea-card excellent">
+            <div class="idea-header">
+                <div class="rank-badge">#10</div>
+                <h3>公考通</h3>
+                <span class="score-badge score-excellent">优秀 · 95分</span>
+            </div>
+
+            <div class="topic-info">
+                <span class="topic-label">热搜话题:</span>
+                <span class="topic-value">国考</span>
+                <span class="heat-value">热度: 303,952</span>
+            </div>
+
+            <!-- 事件背景 -->
+            <div class="section">
+                <h4>📋 事件背景</h4>
+                <p class="background-text">2026年国家公务员考试笔试成绩陆续公布，考生们开始查询成绩并准备面试环节。国考作为每年最受关注的公务员考试之一，竞争激烈程度逐年上升。</p>
+            </div>
+
+            <!-- 事件脉络 -->
+            <div class="section">
+                <h4>📅 事件脉络</h4>
+                <ul class="timeline"><li>2025年11月：国考笔试举行</li><li>2025年12月：笔试成绩查询开启</li><li>2026年1月：面试公告发布，考生准备面试</li><li>2026年2-4月：各部委陆续组织面试</li></ul>
+            </div>
+
+            <!-- 当前状态 -->
+            <div class="section">
+                <h4>📍 当前状态</h4>
+                <p class="status-badge">成绩查询高峰期，面试准备阶段</p>
+            </div>
+
+            <!-- 舆论焦点 -->
+            <div class="section">
+                <h4>💬 舆论焦点</h4>
+                <div class="tags-container"><span class='tag'>笔试分数线</span>, <span class='tag'>面试技巧</span>, <span class='tag'>岗位竞争比</span>, <span class='tag'>备考经验分享</span></div>
+            </div>
+
+            <!-- 相关主体 -->
+            <div class="section">
+                <h4>👥 相关主体</h4>
+                <div class="tags-container"><span class='tag'>备考学生</span>, <span class='tag'>培训机构</span>, <span class='tag'>人事部门</span>, <span class='tag'>各大高校</span></div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- 评分详情 -->
+            <div class="score-detail">
+                <div class="score-item">
+                    <span class="score-label">有趣度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar interesting-bar" style="width: 95.0%"></div>
+                    </div>
+                    <span class="score-value">76/80</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">有用度</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar usefulness-bar" style="width: 95.0%"></div>
+                    </div>
+                    <span class="score-value">19/20</span>
+                </div>
+            </div>
+
+            <!-- 产品创意 -->
+            <div class="section product-section">
+                <h4>💡 产品创意方案</h4>
+                <div class="product-name">公考通</div>
+                <div class="section-subtitle">核心功能</div>
+                <ul class="features-list"><li>笔试成绩快速查询和对比</li><li>智能面试模拟和点评</li><li>岗位竞争比分析</li><li>备考计划和进度管理</li><li>历年真题和解析</li><li>考生经验社区</li></ul>
+                <div class="section-subtitle">目标用户</div>
+                <p class="target-users">备考公务员/事业单位的考生群体</p>
+                <div class="section-subtitle">分析理由</div>
+                <p class="reason-text">国考是年度重大考试，备考周期长、需求刚性。用户需要成绩查询、面试准备、岗位选择等一站式服务。产品可切入面试培训、资料付费、会员服务等变现路径。</p>
+            </div>
+
+            <!-- 变现路径 -->
+            <div class="section monetization-section">
+                <h4>💵 变现路径</h4>
+                <ul class="monetization-list"><li><span class='money-icon'>💰</span>面试培训班</li><li><span class='money-icon'>💰</span>付费真题</li><li><span class='money-icon'>💰</span>VIP会员</li><li><span class='money-icon'>💰</span>岗位内推服务</li></ul>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="footer">
+        <p>由 Claude Code 微博热搜产品创意分析技能生成</p>
+        <p style="margin-top: 8px; opacity: 0.7;">评分标准：有趣度(80%) + 有用度(20%) | 包含事件脉络、背景分析、产品创意、变现路径</p>
+    </div>
+</body>
+</html>
