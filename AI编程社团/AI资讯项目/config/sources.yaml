@@ -1,0 +1,157 @@
+# AI News Sources Configuration
+# Add your RSS feeds and API sources here
+
+rss_feeds:
+  # Chinese AI News Sources (优先级高)
+  - name: "爱范儿-AI"
+    url: "https://www.ifanr.com/feed"
+    category: "tech_media"
+    authority_score: 28
+    enabled: true
+
+  - name: "钛媒体-AI"
+    url: "https://www.tmtpost.com/feed"
+    category: "tech_media"
+    authority_score: 27
+    enabled: true
+
+  - name: "品玩"
+    url: "https://www.pingwest.com/feed"
+    category: "tech_media"
+    authority_score: 26
+    enabled: true
+
+  - name: "少数派"
+    url: "https://sspai.com/feed"
+    category: "tech_media"
+    authority_score: 25
+    enabled: true
+
+  - name: "新浪科技"
+    url: "https://tech.sina.com.cn/zt_d/tech_ai/"
+    category: "tech_media"
+    authority_score: 24
+    enabled: true
+
+  # Tier 1: AI Labs & Research Organizations
+  - name: "OpenAI Blog"
+    url: "https://openai.com/news/rss.xml"
+    category: "ai_lab"
+    authority_score: 30
+    enabled: true
+
+  - name: "Anthropic Research"
+    url: "https://www.anthropic.com/research"
+    category: "ai_lab"
+    authority_score: 30
+    enabled: true
+
+  - name: "Google DeepMind"
+    url: "https://deepmind.google/blog/rss/"
+    category: "ai_lab"
+    authority_score: 30
+    enabled: true
+
+  - name: "Meta AI"
+    url: "https://ai.meta.com/blog/rss/"
+    category: "ai_lab"
+    authority_score: 27
+    enabled: true
+
+  - name: "Hugging Face Blog"
+    url: "https://huggingface.co/blog/feed.xml"
+    category: "open_source"
+    authority_score: 26
+    enabled: true
+
+  # Tier 1: Premium Tech Media
+  - name: "TechCrunch AI"
+    url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+    category: "tech_media"
+    authority_score: 25
+    enabled: true
+
+  - name: "MIT Technology Review"
+    url: "https://www.technologyreview.com/topic/artificial-intelligence/feed/"
+    category: "tech_media"
+    authority_score: 28
+    enabled: true
+
+  - name: "VentureBeat AI"
+    url: "https://venturebeat.com/category/ai/feed/"
+    category: "tech_media"
+    authority_score: 24
+    enabled: true
+
+  - name: "Ars Technica AI"
+    url: "https://arstechnica.com/tag/artificial-intelligence/feed/"
+    category: "tech_media"
+    authority_score: 23
+    enabled: true
+
+  - name: "The Verge AI"
+    url: "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml"
+    category: "tech_media"
+    authority_score: 23
+    enabled: true
+
+  # Tier 2: Academic & Specialized
+  - name: "Papers with Code"
+    url: "https://paperswithcode.com/latest/rss"
+    category: "academic"
+    authority_score: 25
+    enabled: true
+
+  - name: "AI News"
+    url: "https://www.artificialintelligence-news.com/feed/"
+    category: "tech_media"
+    authority_score: 21
+    enabled: true
+
+  - name: "ScienceDaily AI"
+    url: "https://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml"
+    category: "academic"
+    authority_score: 24
+    enabled: true
+
+  # 高价值AI源 - 大模型/重磅发布（权威性高）
+  - name: "DeepMind Blog"
+    url: "https://deepmind.google/blog/rss/"
+    category: "ai_lab"
+    authority_score: 30
+    enabled: true
+
+  - name: "Anthropic News"
+    url: "https://www.anthropic.com/news/rss"
+    category: "ai_lab"
+    authority_score: 30
+    enabled: true
+
+  # 中文科技媒体（权重降低，避免噪音）
+  - name: "36kr AI"
+    url: "https://36kr.com/feed"
+    category: "tech_media"
+    authority_score: 18
+    enabled: true
+
+# API Sources (optional - requires additional setup)
+api_sources:
+  arxiv:
+    enabled: true
+    categories:
+      - "cs.AI"
+      - "cs.LG"
+    max_results: 30
+    authority_score: 28
+
+  # Twitter scraping (requires playwright: pip install playwright && playwright install chromium)
+  twitter:
+    enabled: true
+    max_tweets_per_account: 10
+    # Accounts to scrape (defined in fetch_twitter.py TWITTER_ACCOUNTS)
+
+# Settings
+settings:
+  fetch_interval_hours: 1
+  retention_days: 30
+  max_articles_per_fetch: 200

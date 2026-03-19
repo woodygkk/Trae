@@ -1,0 +1,65 @@
+{
+  "packages_dir": "E:/软件",
+  "software_list": [
+    {
+      "name": "AutoCAD_2016_Simplified_Chinese_Win_64bit_dlm.sfx",
+      "path": "E:\\软件\\AutoCAD_2016_Simplified_Chinese_Win_64bit_dlm.sfx.exe",
+      "file_ext": ".exe",
+      "params": "/S",
+      "install_path": "C:\\Program Files (x86)",
+      "enabled": false,
+      "order": 0,
+      "status": "pending"
+    },
+    {
+      "name": "DGSetup_Home_BZNR",
+      "path": "E:\\软件\\DGSetup_Home_BZNR.exe",
+      "file_ext": ".exe",
+      "params": "/S",
+      "install_path": "C:\\Program Files (x86)",
+      "enabled": true,
+      "order": 1,
+      "status": "pending"
+    },
+    {
+      "name": "LeboPCCast_3.15.23_PCXZW_11834",
+      "path": "E:\\软件\\LeboPCCast_3.15.23_PCXZW_11834.exe",
+      "file_ext": ".exe",
+      "params": "/S",
+      "install_path": "C:\\Program Files (x86)",
+      "enabled": false,
+      "order": 2,
+      "status": "skipped"
+    },
+    {
+      "name": "pietty(1)",
+      "path": "E:\\软件\\pietty(1).exe",
+      "file_ext": ".exe",
+      "params": "/S",
+      "install_path": "C:\\Program Files (x86)",
+      "enabled": false,
+      "order": 3,
+      "status": "skipped"
+    },
+    {
+      "name": "UninstallTool",
+      "path": "E:\\软件\\UninstallTool.exe",
+      "file_ext": ".exe",
+      "params": "/S",
+      "install_path": "C:\\Program Files (x86)",
+      "enabled": false,
+      "order": 4,
+      "status": "skipped"
+    },
+    {
+      "name": "驱动精灵",
+      "path": "E:\\软件\\驱动精灵.exe",
+      "file_ext": ".exe",
+      "params": "/S",
+      "install_path": "C:\\Program Files (x86)",
+      "enabled": false,
+      "order": 5,
+      "status": "skipped"
+    }
+  ]
+}

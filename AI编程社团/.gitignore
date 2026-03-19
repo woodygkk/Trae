@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-electron/
+.vite/
+*.egg-info/
+
+# Temp files
+tmpclaude-*/
+*.tmp
+nul
+
+# IDE
+.claude/
+.trae/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024">
+  <rect width="100%" height="100%" fill="#FFFAF6"/>
+  <rect x="100" y="100" width="824" height="824" fill="#EFEFD0" rx="20"/>
+  <text x="512" y="480" font-family="Arial" font-size="48" fill="#FF6B35" text-anchor="middle">
+    Image 4
+  </text>
+  <text x="512" y="560" font-family="Arial" font-size="24" fill="#2D3047" text-anchor="middle">
+    现实应用场景
+  </text>
+  <text x="512" y="620" font-family="Arial" font-size="16" fill="#999" text-anchor="middle">
+    (纽约客风格插画)
+  </text>
+</svg>

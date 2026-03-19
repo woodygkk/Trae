@@ -1,0 +1,50 @@
+# Push Notification Configuration
+# Configure your notification channels here
+
+# Feishu (飞书) - Recommended for Chinese users
+feishu:
+  enabled: true
+  webhook: "https://open.feishu.cn/open-apis/bot/v2/hook/19d9f131-ed1a-438b-8591-1a6bda415546"
+  # Example: https://open.feishu.cn/open-apis/bot/v2/hook/YOUR_TOKEN
+
+# WeChatWork (企业微信)
+wechat_work:
+  enabled: false
+  webhook: ""  # Get from: Group Settings -> Bots -> Add Bot
+  # Example: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY
+
+# DingTalk (钉钉)
+dingtalk:
+  enabled: false
+  webhook: ""  # Get from: Group Settings -> Bots -> Add Bot -> Custom Bot
+  secret: ""  # Optional security secret
+  # Example: https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN
+
+# Telegram
+telegram:
+  enabled: false
+  bot_token: ""  # Get from @BotFather
+  chat_id: ""    # Your chat/channel ID
+  # How to get chat_id: Send a message to your bot, then visit:
+  # https://api.telegram.org/botYOUR_TOKEN/getUpdates
+
+# Email (using capymail)
+email:
+  enabled: false
+  to: ""  # Your email address
+  # Example: user@example.com
+
+# Push Schedule
+schedule:
+  # When to send daily digest (24-hour format)
+  daily_time: "08:00"  # 8:00 AM
+
+  # Days of week (0=Monday, 6=Sunday)
+  # Leave empty for every day
+  days: []  # Example: [0, 1, 2, 3, 4] for weekdays only
+
+# Output Settings
+output:
+  articles_count: 10  # Number of top articles to push
+  include_summary: true
+  summary_max_length: 200

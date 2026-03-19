@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI今日值得关注 - 2026年03月15日</title>
+<style>
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #f0f2f5; color: #1a1a2e; line-height: 1.6; }
+  .container { max-width: 720px; margin: 0 auto; padding: 0; }
+  .header { background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); color: #fff; padding: 40px 32px 32px; text-align: center; }
+  .header h1 { font-size: 28px; font-weight: 700; letter-spacing: 2px; margin-bottom: 6px; }
+  .header .subtitle { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 16px; }
+  .header .date { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 6px 20px; font-size: 15px; font-weight: 500; }
+  .header .stats { margin-top: 18px; display: flex; justify-content: center; gap: 28px; }
+  .header .stat-item { text-align: center; }
+  .header .stat-num { font-size: 22px; font-weight: 700; color: #7dd3fc; }
+  .header .stat-label { font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; }
+  .summary-bar { background: #fff; border-bottom: 1px solid #e8e8ec; padding: 18px 32px; }
+  .summary-bar p { font-size: 14px; color: #555; line-height: 1.7; }
+  .summary-bar strong { color: #302b63; }
+  .category { margin: 20px 16px; }
+  .category-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 0 8px; }
+  .category-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; flex-shrink: 0; }
+  .category-title { font-size: 17px; font-weight: 700; color: #1a1a2e; }
+  .category-count { font-size: 12px; color: #888; background: #f0f0f5; border-radius: 10px; padding: 2px 10px; margin-left: auto; }
+  .news-card { background: #fff; border-radius: 12px; padding: 18px 20px; margin-bottom: 10px; border: 1px solid #e8e8ec; transition: box-shadow 0.2s; }
+  .news-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .news-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+  .score-badge { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; }
+  .score-high { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+  .score-mid { background: linear-gradient(135deg, #f39c12, #e67e22); }
+  .news-title { font-size: 15px; font-weight: 600; color: #1a1a2e; line-height: 1.5; flex: 1; }
+  .news-summary { font-size: 13.5px; color: #555; line-height: 1.7; padding-left: 52px; }
+  .news-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; padding-left: 52px; }
+  .news-tag { font-size: 11px; color: #888; background: #f5f5fa; border-radius: 4px; padding: 2px 8px; }
+  .news-source { font-size: 11px; color: #aaa; }
+  .highlights-section { margin: 24px 16px; }
+  .highlights-title { font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; padding: 0 8px; }
+  .highlights-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #e8e8ec; }
+  .highlights-table th { background: #302b63; color: #fff; padding: 10px 14px; font-size: 12px; font-weight: 600; text-align: left; }
+  .highlights-table td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #f0f0f5; }
+  .highlights-table tr:last-child td { border-bottom: none; }
+  .highlights-table tr:hover td { background: #f8f8fc; }
+  .footer { text-align: center; padding: 28px 32px; color: #999; font-size: 12px; }
+  .footer .divider { width: 60px; height: 2px; background: linear-gradient(90deg, #302b63, #7dd3fc); margin: 0 auto 16px; border-radius: 1px; }
+  .bg-gtc { background: linear-gradient(135deg, #76b900, #5a8f00); }
+  .bg-china { background: linear-gradient(135deg, #e11d48, #be123c); }
+  .bg-model { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+  .bg-industry { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .bg-policy { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .special-banner { background: linear-gradient(135deg, #76b900 0%, #1a1a2e 100%); color: #fff; margin: 20px 16px; border-radius: 12px; padding: 18px 24px; }
+  .special-banner .banner-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+  .special-banner .banner-title { font-size: 18px; font-weight: 700; }
+  .special-banner .banner-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+  @media (max-width: 640px) {
+    .header { padding: 28px 20px 24px; }
+    .header h1 { font-size: 22px; }
+    .category { margin: 16px 10px; }
+    .news-card { padding: 14px 16px; }
+    .news-summary, .news-meta { padding-left: 0; }
+    .news-summary { margin-top: 4px; }
+    .summary-bar { padding: 14px 20px; }
+  }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>AI 今日值得关注</h1>
+    <div class="subtitle">AI Today's Noteworthy News</div>
+    <div class="date">2026年03月15日 星期日</div>
+    <div class="stats">
+      <div class="stat-item"><div class="stat-num">20</div><div class="stat-label">精选资讯</div></div>
+      <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">主题分类</div></div>
+      <div class="stat-item"><div class="stat-num">50.6</div><div class="stat-label">平均评分</div></div>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    <p><strong>今日焦点：</strong>AI行业今日热点资讯</p>
+  </div>
+
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon bg-model">📜</div>
+      <div class="category-title">技术突破</div>
+      <div class="category-count">2 条</div>
+    </div>
+
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">57.1</div>
+        <div class="news-title">拆解全球首款手机“龙虾”应用，云端“捷径”能走多远？</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: 钛媒体</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">55.1</div>
+        <div class="news-title">【数智周报】OpenClaw引发权威机构连续预警；腾讯云涨价，部分AI模型涨幅超400%；Anthropic起诉美国政府</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: 钛媒体</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon bg-model">💻</div>
+      <div class="category-title">产品发布</div>
+      <div class="category-count">3 条</div>
+    </div>
+
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">55.6</div>
+        <div class="news-title">10分钟装好一只“龙虾”，周鸿祎亲自动手！360推出国内首个“安全龙虾”，内置百款大模型</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: InfoQ AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">54.0</div>
+        <div class="news-title">Cloudflare发布AI辅助开发的实验性Next.js替代方案</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: InfoQ AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">53.2</div>
+        <div class="news-title">腾讯“养虾”建厂：不止卖铲，意在收租</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: 钛媒体</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon bg-model">📜</div>
+      <div class="category-title">其他</div>
+      <div class="category-count">14 条</div>
+    </div>
+
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">52.6</div>
+        <div class="news-title">SXSW 2026 Updates: Sunday Explores Activism, Fandom and the Future of AI</div>
+      </div>
+      <div class="news-summary">We've heard from icons like Jamie Lee Curtis, Steven Spielberg and Serena Williams so far. Sunday has a lot about how AI is changing the world -- for good and bad.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">51.4</div>
+        <div class="news-title">The Oura Ring vs. Apple Watch Choice for Me Boils Down to One Key Feature</div>
+      </div>
+      <div class="news-summary">After months of wearing both, one deal-breaker tipped the scales, but the answer isn't as simple as you'd think.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">51.2</div>
+        <div class="news-title">7 Coffee Mistakes You May Not Know You're Making, According to an Expert</div>
+      </div>
+      <div class="news-summary">Overwashing, underfiltering and more brewing blunders that could be tainting your morning cup.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">51.0</div>
+        <div class="news-title">BTS Is Back: Here's Everything to Know About Their Return and Live Show on Netflix</div>
+      </div>
+      <div class="news-summary">After a four-year hiatus, the kings of K-Pop are making up for lost time.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">50.8</div>
+        <div class="news-title">Camp Snap Camera Review: At Least It Looks Good</div>
+      </div>
+      <div class="news-summary">The Camp Snap camera is only $70 and promises a screen-free photo experience. The result is one step up from an old-school disposable camera.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">50.0</div>
+        <div class="news-title">Check Out All These iOS 26 Tips, Tricks and Hacks</div>
+      </div>
+      <div class="news-summary">Want to change your iPhone's Liquid Glass design or get rid of your alarm slider? Look no further.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">48.4</div>
+        <div class="news-title">This Is the Bacon Upgrade You Didn't Know You Needed</div>
+      </div>
+      <div class="news-summary">I started using my air fryer for bacon and making those crispy strips has never been easier.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">48.4</div>
+        <div class="news-title">Today's NYT Connections Hints, Answers and Help for March 15, #1008</div>
+      </div>
+      <div class="news-summary">Here are some hints and the answers for the NYT Connections puzzle for March 15, No. 1,008</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">48.1</div>
+        <div class="news-title">月薪两万都养不起“龙虾”？为啥“龙虾”这么贵？</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: 钛媒体</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">48.0</div>
+        <div class="news-title">Today's Wordle Hints, Answer and Help for March 15, #1730</div>
+      </div>
+      <div class="news-summary">Here are hints and the answer for today's Wordle for March 15, No. 1,730.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">47.8</div>
+        <div class="news-title">头号Anthropic黑马斯克，决定把xAI变成Anthropic</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: 钛媒体</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">47.6</div>
+        <div class="news-title">AI将省出5300亿、淘汰一半人，“生死存亡”时刻，腾爱优芒红果提出什么新需求？</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: 钛媒体</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">47.1</div>
+        <div class="news-title">科技CEO用ChatGPT+基因数据定制癌症疫苗！肿瘤缩小50%</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: 量子位</span>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">45.8</div>
+        <div class="news-title">Today's NYT Connections: Sports Edition Hints and Answers for March 15, #538</div>
+      </div>
+      <div class="news-summary">Here are hints and the answers for the NYT Connections: Sports Edition puzzle for March 15, No. 538.</div>
+      <div class="news-meta">
+        <span class="news-source">来源: CNET AI</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon bg-model">📜</div>
+      <div class="category-title">研究论文</div>
+      <div class="category-count">1 条</div>
+    </div>
+
+    <div class="news-card">
+      <div class="news-top">
+        <div class="score-badge score-high">48.4</div>
+        <div class="news-title">孕期免疫激活影响后代大脑：《Brain, Behavior, and Immunity》新研究，揭示3个关键发现</div>
+      </div>
+      <div class="news-summary"></div>
+      <div class="news-meta">
+        <span class="news-source">来源: 钛媒体</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="divider"></div>
+    <p>AI 今日值得关注 | Daily AI Digest</p>
+    <p style="margin-top: 4px; color: #bbb;">由 HappyCapy AI 自动聚合生成</p>
+  </div>
+
+</div>
+</body>
+</html>

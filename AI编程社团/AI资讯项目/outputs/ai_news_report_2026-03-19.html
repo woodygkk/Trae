@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 今日资讯 - 2026年3月19日</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.9;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 50px 40px;
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,47,247,0.1));
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .header h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        .header .subtitle { font-size: 1.2em; color: #888; }
+        .stats { display: flex; justify-content: center; gap: 50px; margin-top: 30px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 2.5em; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 0.9em; color: #666; margin-top: 5px; }
+
+        .section-title {
+            font-size: 1.6em;
+            color: #fff;
+            margin: 50px 0 25px;
+            padding-left: 20px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .article {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+        }
+        .article:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(0,212,255,0.3);
+            transform: translateY(-3px);
+        }
+        .article.top {
+            background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(123,47,247,0.08));
+            border: 1px solid rgba(255,107,107,0.3);
+        }
+        .article-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        .rank {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            flex-shrink: 0;
+        }
+        .article-title {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #fff;
+            flex: 1;
+            line-height: 1.4;
+        }
+        .article-score {
+            background: rgba(0,212,255,0.2);
+            color: #00d4ff;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 15px;
+            padding-left: 51px;
+        }
+        .article-meta span { display: flex; align-items: center; gap: 5px; }
+        .category-tag {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+        }
+        .category-技术突破 { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .category-产品发布 { background: rgba(0,212,255,0.2); color: #00d4ff; }
+        .category-研究论文 { background: rgba(123,47,247,0.2); color: #b47aff; }
+        .category-行业动态 { background: rgba(255,193,7,0.2); color: #ffc107; }
+        .category-政策法规 { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .category-工具教程 { background: rgba(255,152,0,0.2); color: #ff9800; }
+        .category-其他 { background: rgba(158,158,158,0.2); color: #9e9e9e; }
+
+        .article-summary {
+            color: #b0b0b0;
+            font-size: 1em;
+            line-height: 2;
+            margin: 15px 0;
+            padding: 20px 24px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            border-left: 3px solid rgba(0,212,255,0.3);
+            padding-left: 51px;
+        }
+        .article-summary p { margin-bottom: 14px; }
+        .article-summary p:last-child { margin-bottom: 0; }
+        .article-summary strong { color: #fff; }
+        .article-summary .highlight { color: #00d4ff; font-weight: 600; }
+
+        .article-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #00d4ff;
+            text-decoration: none;
+            font-size: 0.95em;
+            padding: 10px 20px;
+            background: rgba(0,212,255,0.1);
+            border-radius: 25px;
+            margin-left: 51px;
+            transition: all 0.3s ease;
+        }
+        .article-link:hover {
+            background: rgba(0,212,255,0.2);
+            transform: translateX(5px);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI 今日资讯</h1>
+            <p class="subtitle">2026年3月19日 · 智能聚合精选</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">68</div>
+                    <div class="stat-label">今日文章</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">数据来源</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Twitter抓取</div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">🔥 热门资讯 Top 10</h2>
+
+        <div class="article top">
+            <div class="article-header">
+                <span class="rank">1</span>
+                <span class="article-title">"养龙虾"狂热背后：中国AI应用诚可贵，底层创新价更高</span>
+                <span class="article-score">67.7</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-技术突破">技术突破</span>
+                <span>📰 钛媒体-AI</span>
+                <span>🕐 约11小时前</span>
+            </div>
+            <div class="article-summary">
+                <p><strong>OpenClaw在中国市场迅速走红</strong>，在折射出中国AI产业在应用层面快速落地、场景丰富、体验驱动的强大创新能力的同时，也暴露出一个更深层的问题——支撑这些应用繁荣的底层能力，我们仍然存在不小的差距。</p>
+                <p>中国AI产业的应用创新已经走在世界前列，无论是产品的迭代速度还是用户体验的优化，都展现出了强大的创新能力。OpenClaw作为的现象级AI应用，凭借其独特的产品设计和用户体验，在短时间内获得了大量用户的青睐，创造了中国AI应用的一个里程碑。</p>
+                <p>但当我们审视大模型底层技术、核心算法创新时，与国际顶尖水平仍存在差距。这种<span class="highlight">"应用强、底层弱"</span>的格局，让人不禁思考：在AI竞争的下半场，如何才能实现从"应用大国"到"创新强国"的跨越？</p>
+                <p>值得注意的是，底层创新能力的提升需要长期的投入和积累。这包括基础研究的持续投入、核心技术的攻关突破、人才培养体系的完善等多个方面。令人欣慰的是，越来越多的从业者开始意识到这个问题的重要性，并在实际行动中加以践行。</p>
+                <p>专家认为，中国AI产业的发展路径应该是"两条腿走路"——既要在应用创新上保持领先优势，又要在底层技术上进行持续攻关。只有这样，才能在未来的AI竞争中立于不败之地。</p>
+            </div>
+            <a class="article-link" href="https://www.tmtpost.com/7920897.html" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article top">
+            <div class="article-header">
+                <span class="rank">2</span>
+                <span class="article-title">Google AI：Stitch 面向18岁以上用户开放</span>
+                <span class="article-score">67.5</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-产品发布">产品发布</span>
+                <span>🐦 Twitter @GoogleAI</span>
+                <span>🕐 约14小时前</span>
+            </div>
+            <div class="article-summary">
+                <p><strong>Google AI 宣布其 Stitch 平台正式向18岁以上用户开放</strong>，这是Google在AI创意工具领域的重要进展。Stitch是Google推出的AI驱动创意设计工具，本次更新带来了多项平台功能升级。</p>
+                <p>Stitch平台结合了Google在生成式AI领域的最新技术成果，可以帮助用户快速创建设计内容。用户只需输入简单的文字描述或概念，AI就能自动生成相应的设计方案，从概念到成品的转化效率大幅提升。这一工具的出现，标志着AI在创意设计领域的应用已经进入实用化阶段。</p>
+                <p>根据Google的说明，<span class="highlight">Stitch面向18岁以上用户开放，用户需位于Gemini服务可用的地区</span>。这一限制主要是出于合规和安全考虑。Gemini作为Google最先进的AI模型之一，其服务范围仍在持续扩展中，未来有望覆盖更多地区。</p>
+                <p>该平台的开放将降低AI创作门槛，让更多普通用户能够体验到AI驱动的创意设计服务。对于专业设计师而言，Stitch也是一个有力的辅助工具，可以帮助他们快速生成初稿，将更多精力投入到创意决策和细节打磨中。这也是Google在消费级AI应用领域的重要战略布局。</p>
+            </div>
+            <a class="article-link" href="https://twitter.com/GoogleAI/status/2034332965723845040" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article top">
+            <div class="article-header">
+                <span class="rank">3</span>
+                <span class="article-title">Rebel Audio：面向新手创作者的 AI 播客工具</span>
+                <span class="article-score">67.5</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-技术突破">技术突破</span>
+                <span>📰 TechCrunch AI</span>
+                <span>🕐 约15小时前</span>
+            </div>
+            <div class="article-summary">
+                <p><strong>Rebel Audio 是一款全新的一体化AI播客工具</strong>，允许创作者录制播客、编辑内容、剪辑社交媒体片段、发布节目，整个流程无需离开平台。这款工具专门针对首次接触播客创作的新人设计，大幅降低了播客内容创作的门槛。</p>
+                <p>传统的播客创作需要多个专业工具配合使用，从录制到剪辑再到发布，流程繁琐且成本较高。专业的录制设备、音频编辑软件、托管平台等，对于新手来说都是不小的门槛。Rebel Audio通过AI技术将这些步骤无缝整合，让创作者可以专注于内容本身而非技术细节。</p>
+                <p>该工具的核心亮点包括：<span class="highlight">AI辅助录音优化</span>，可以自动降噪、提升音质；<span class="highlight">智能剪辑功能</span>，能够识别语音并自动去除停顿和杂音；<span class="highlight">一键发布</span>，支持同步到多个播客平台。</p>
+                <p>这一产品的出现标志着AI在内容创作领域的应用进一步深入。从文字、图片到音频、视频，AI正在全方位改变内容创作的生产方式。对于想要尝试播客但又担心技术难度的用户来说，Rebel Audio提供了一个零门槛的起点。</p>
+            </div>
+            <a class="article-link" href="https://techcrunch.com/2026/03/18/rebel-audio-is-a-new-ai-podcasting-tool-aimed-at-first-time-creators/" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article">
+            <div class="article-header">
+                <span class="rank">4</span>
+                <span class="article-title">万辰集团最新财报：500亿年报落定，量贩零食进入效率决胜期</span>
+                <span class="article-score">67.3</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-行业动态">行业动态</span>
+                <span>📰 钛媒体-AI</span>
+                <span>🕐 约9小时前</span>
+            </div>
+            <div class="article-summary">
+                <p>好想来母公司<strong>万辰集团</strong>发布了2025年财报，营业收入达<span class="highlight">514.59亿元</span>，同比增长59.17%；净利润<span class="highlight">25.68亿元</span>，同比增长212.18%。公司旗下量贩零食业务毛利率12.32%，净利率4.98%。</p>
+                <p>截至2025年12月31日，万辰集团旗下<strong>门店数达到18314家</strong>，净增超4000家，进一步夯实零食连锁第一品牌的行业位置。按门店数量计，万辰集团旗下好想来已成为零食连锁第一品牌。</p>
+                <p>从规模竞争走向效率深耕，万辰集团展现了强大的盈利能力和运营效率。2025年，公司发起了效率革命：持续加注数字化，布局48个常温仓和9个冷链仓，实现"T+1"甚至"半日达"的配送速度；同时敏锐捕捉即时零售风口，近万家门店接入美团闪购、淘宝闪购等平台。</p>
+                <p>产品方面，<span class="highlight">"好想来超值"与"好想来甄选"双系列产品矩阵</span>大放异彩。果汁茶4个月卖出3500万瓶，月度复购率超过同类型头部品牌单品；与蒙牛联名的纯牛奶一经上市就引起抢购，一度脱销。</p>
+            </div>
+            <a class="article-link" href="https://www.tmtpost.com/7919846.html" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article">
+            <div class="article-header">
+                <span class="rank">5</span>
+                <span class="article-title">超级创业者时代：如何让个人拥有组织级能力</span>
+                <span class="article-score">67.0</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-技术突破">技术突破</span>
+                <span>📰 36kr AI</span>
+                <span>🕐 约10小时前</span>
+            </div>
+            <div class="article-summary">
+                <p>全国已有超过<strong>1200万创业者</strong>选择OPC（一人公司）模式，新注册OPC数量同比增长47%，创造的经济价值占新经济总量的23%。<span class="highlight">超级个体正在成为创新经济最小而最高效的单元</span>。</p>
+                <p>历史上每一次生产关系的重构，都诞生于旧有组织形态的瓶颈与新技术力量的碰撞。从1980年代的街头个体户，到1999年《个人独资企业法》确立的法人主体，再到2014年"大众创业、万众创新"的移动互联网浪潮——每一次个体经济政策的跃升，都是时代的一次集体答卷。而今天，Agent、OpenClaw等基础设施的普及，为超级创业者提供了以AI技术为基础驱动创新变革的天然契机。</p>
+                <p>OPC模式具有五大核心特征：<strong>极致精简</strong>（决策链路趋近于零）、<strong>AI赋能</strong>（智能体承担重复性跨学科任务）、<strong>全链路闭环</strong>（个人可独立完成全流程运营）、<strong>高弹性</strong>（试错成本低、方向调整快）、<strong>利基定位</strong>（深耕大企业无暇覆盖的细分市场）。</p>
+                <p>大模型普惠化让个人第一次拥有"组织级大脑"——推理成本持续下降，开源模型崛起；智能体从辅助工具进化为"数字员工"，具备自主规划、工具调用、记忆与反思的能力。<span class="highlight">"个人+AI=公司"的全新组织范式正在爆发</span>。</p>
+            </div>
+            <a class="article-link" href="https://36kr.com/p/3729545296559749?f=rss" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article">
+            <div class="article-header">
+                <span class="rank">6</span>
+                <span class="article-title">长三角企业国际化合作发展交流会在宁启幕</span>
+                <span class="article-score">66.3</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-行业动态">行业动态</span>
+                <span>📰 36kr AI</span>
+                <span>🕐 约11小时前</span>
+            </div>
+            <div class="article-summary">
+                <p>以"<strong>从长三角到全球：共筑企业出海新航线</strong>"为主题的长三角企业国际化合作发展交流会在南京隆重举行。活动由香港长三角企业家国际联盟与江苏省国际商会联合主办，汇聚政商学界约150名代表，包括政府官员、驻沪总领事、行业专家和企业家。</p>
+                <p>活动中，<span class="highlight">"新华·中国企业出海合作中心（长三角）"正式揭牌</span>。该中心将整合全球政商资源，助推企业拓展国际市场，提升区域产业链协同能力与品牌出海能力，成为长三角企业走向全球的重要一站式出海枢纽。</p>
+                <p>柬埔寨王国驻上海总领事馆总领事吴维索、越南驻上海总领事馆总领事陈辉雄等东盟国家总领事亲自出席，释放深化合作强烈信号。柬方宣布2026年上半年将对所有中国公民及游客实施免签政策，为长三角企业布局东盟市场创造有利条件。</p>
+                <p>中心将以香港为全球枢纽，紧扣国家发展战略，联动国内外优质网络资源，放大中国企业出海的整体价值，从长三角创新策源到东盟产能合作，为企业铺设清晰、稳健的全球化发展航道。</p>
+            </div>
+            <a class="article-link" href="https://36kr.com/p/3729511818001799?f=rss" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article">
+            <div class="article-header">
+                <span class="rank">7</span>
+                <span class="article-title">实测 Seedance 2.0 加持的小云雀最新 Agent</span>
+                <span class="article-score">66.1</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-产品发布">产品发布</span>
+                <span>📰 爱范儿-AI</span>
+                <span>🕐 约13小时前</span>
+            </div>
+            <div class="article-summary">
+                <p><strong>Seedance 2.0</strong> 加持的小云雀最新 Agent 实现重大突破：能够读懂剧本的AI短剧Agent诞生，一键生成龙王赘婿短剧。</p>
+                <p>在此之前，AI生成视频主要停留在图片转视频、单镜头生成的阶段。虽然各家都在AI视频领域持续投入，但从剧本理解到完整短剧生成的跨越此前尚未实现。这一次，小云雀Agent首次实现了从剧本理解到完整短剧内容的跨越。</p>
+                <p>具体而言，创作者只需要提供一个剧本大纲，包括人物设定、剧情走向、对话内容等，<span class="highlight">AI就能自动生成分镜、场景、对话等完整的短剧内容</span>。这意味着，视频内容创作的效率将得到革命性的提升。</p>
+                <p>AI视频生成进入了一个全新的阶段。从文字到图片，再到视频，内容创作的生产效率正在被AI持续颠覆。人车家全生态的布局正在加速。小米在AI视频领域的这一突破，引发了行业的广泛关注。</p>
+            </div>
+            <a class="article-link" href="https://www.ifanr.com/1658787" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article">
+            <div class="article-header">
+                <span class="rank">8</span>
+                <span class="article-title">全网猜了一周 DeepSeek V4，结果是小米干的</span>
+                <span class="article-score">65.4</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-其他">其他</span>
+                <span>📰 爱范儿-AI</span>
+                <span>🕐 约10小时前</span>
+            </div>
+            <div class="article-summary">
+                <p>全网猜测了一周的<strong>DeepSeek V4</strong>，结果谜底揭晓——竟是小米发布的！这一"乌龙"事件在科技圈引发了广泛讨论和热议。</p>
+                <p>此前，DeepSeek系列模型凭借出色的性能表现和开源策略，在全球AI领域引起了巨大反响。DeepSeek R1等模型的推出，被认为是中国AI发展的标志性成果，也让国际市场对中国的AI能力有了新的认识。因此当市场传出DeepSeek V4即将发布的消息后，整个行业都充满期待。</p>
+                <p>然而最终证明，这是小米的一次精心策划的"蹭热度"营销。在DeepSeek V4即将发布的预期下，小米借势宣传自己的AI能力，引发了网友的热烈讨论和关注。</p>
+                <p>不管怎样，这一事件反映出<span class="highlight">市场对国产大模型进展的高度期待</span>。DeepSeek的成功已经证明，中国在AI领域有着强大的创新能力。而小米在AI领域的持续投入，也显示了其人车家全生态战略的雄心。</p>
+            </div>
+            <a class="article-link" href="https://www.ifanr.com/1658781" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article">
+            <div class="article-header">
+                <span class="rank">9</span>
+                <span class="article-title">Multiverse Computing 推动压缩AI模型进入主流</span>
+                <span class="article-score">63.8</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-产品发布">产品发布</span>
+                <span>📰 TechCrunch AI</span>
+                <span>🕐 约14小时前</span>
+            </div>
+            <div class="article-summary">
+                <p><strong>Multiverse Computing</strong> 宣布其压缩AI模型解决方案正式进入主流市场，这是AI普惠进程中的重要里程碑。</p>
+                <p>传统的AI模型部署需要大量的计算资源支持。大型语言模型和深度学习模型往往需要高性能GPU集群才能运行，这成为中小企业应用AI的主要障碍之一。高昂的硬件成本和运维费用，让许多企业只能对AI"望而却步"。</p>
+                <p>Multiverse Computing的压缩技术可以在<span class="highlight">保持模型性能的同时大幅降低计算资源需求</span>。通过模型剪枝、量化、知识蒸馏等多种技术手段的结合，实现AI模型的高效压缩，使得模型可以在普通服务器甚至端侧设备上运行。</p>
+                <p>该技术的商业化标志着AI普惠进程的加速。中小企业无需巨额投入也能部署先进的AI能力，这将推动AI在各行业的快速普及。从智能客服到数据分析，从图像识别到自然语言处理，更多企业将能够享受到AI带来的效率提升。</p>
+            </div>
+            <a class="article-link" href="https://techcrunch.com/2026/03/19/multiverse-computing-pushes-its-compressed-ai-models-into-the-mainstream/" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="article">
+            <div class="article-header">
+                <span class="rank">10</span>
+                <span class="article-title">AWE 2026观察：AI重构家庭空间</span>
+                <span class="article-score">62.1</span>
+            </div>
+            <div class="article-meta">
+                <span class="category-tag category-产品发布">产品发布</span>
+                <span>📰 36kr AI</span>
+                <span>🕐 约9小时前</span>
+            </div>
+            <div class="article-summary">
+                <p><strong>AWE 2026</strong>（中国家电及消费电子博览会）正在进行中，AI成为绝对主角。各大家电品牌纷纷展示AI赋能下的智能家居产品，从智能厨房到全屋智能控制系统，AI正在重构家庭空间的每一个角落。</p>
+                <p>在智能厨房领域，AI冰箱可以自动识别食材并推荐菜谱，还能根据食材库存自动下单补货。智能烹饪设备可以自动调节火力和时间，确保最佳烹饪效果。在清洁领域，AI扫地机器人可以智能规划路线，识别不同地面材质并自动调整清洁模式。</p>
+                <p>在全屋智能控制方面，<span class="highlight">AI正在从"单品智能"向"全屋智能"跨越</span>。中央控制系统可以学习用户的生活习惯，自动调节室内温度、照明亮度、空气湿度等各项参数。健康监测设备可以实时追踪家庭成员的健康数据，并在异常时及时预警。</p>
+                <p>趋势观察：AI不再是炫技，而是真正融入家庭生活的每一个细节。当AI能够理解我们的需求、预判我们的行为、服务我们的日常生活，智能家居才真正实现了其应有的价值。</p>
+            </div>
+            <a class="article-link" href="https://36kr.com/p/3729551142534532?f=rss" target="_blank">📖 阅读原文</a>
+        </div>
+
+        <div class="footer">
+            <p>🤖 由 AI 资讯聚合系统自动生成</p>
+            <p style="margin-top:10px;">更新于 2026-03-19 18:20</p>
+            <p style="margin-top:15px; color:#555;">
+                数据来源：钛媒体 · 36kr · 爱范儿 · 少数派 · TechCrunch · AI News · ScienceDaily<br>
+                Twitter: @OpenAI · @AnthropicAI · @GoogleAI · @GoogleDeepMind · @ylecun · @sama · @DrJimFan · @AndrewYNg
+            </p>
+        </div>
+    </div>
+</body>
+</html>

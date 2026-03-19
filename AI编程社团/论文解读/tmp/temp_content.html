@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>思维链提示在大语言模型中引出推理能力</title>
+    <style>
+        @font-face {
+            font-family: 'NotoSansSC';
+            src: url('file://C:/Windows/Fonts/msyh.ttc') format('opentype');
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'NotoSansSC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 12pt;
+            line-height: 1.8;
+            color: #2D3047;
+            padding: 2cm;
+        }
+
+        /* 封面页 */
+        .cover-page {
+            page-break-after: always;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #FFFAF6 0%, #F7C59F 100%);
+        }
+
+        .cover-page h1 {
+            font-size: 28pt;
+            color: #2D3047;
+            margin-bottom: 1.5cm;
+            line-height: 1.3;
+            max-width: 80%;
+        }
+
+        .cover-page .subtitle {
+            font-size: 14pt;
+            color: #FF6B35;
+            margin-bottom: 3cm;
+        }
+
+        .cover-page .meta {
+            font-size: 11pt;
+            color: #666;
+            line-height: 2;
+        }
+
+        .cover-page .paper-id {
+            margin-top: 2cm;
+            font-size: 10pt;
+            color: #999;
+        }
+
+        /* 目录页 */
+        .toc-page {
+            page-break-after: always;
+        }
+
+        .toc-title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #2D3047;
+            margin-bottom: 1cm;
+            padding-bottom: 0.5cm;
+            border-bottom: 2px solid #FF6B35;
+        }
+
+        .toc-item {
+            padding: 0.3cm 0;
+            font-size: 11pt;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .toc-item.level-2 { margin-left: 0.5cm; }
+        .toc-item.level-3 { margin-left: 1cm; }
+
+        .toc-dots {
+            flex-grow: 1;
+            border-bottom: 1px dotted #ccc;
+            margin: 0 0.5cm;
+            transform: translateY(-4px);
+        }
+
+        .toc-page {
+            font-family: 'NotoSansSC', sans-serif;
+        }
+
+        /* 内容区域 */
+        .content {
+            font-size: 11pt;
+            line-height: 1.8;
+        }
+
+        h2 {
+            font-size: 16pt;
+            color: #2D3047;
+            margin: 1.5cm 0 1cm;
+            padding-left: 0.5cm;
+            border-left: 4px solid #FF6B35;
+        }
+
+        h3 {
+            font-size: 13pt;
+            color: #2D3047;
+            margin: 1.2cm 0 0.8cm;
+        }
+
+        p {
+            margin-bottom: 0.8cm;
+            text-align: justify;
+        }
+
+        /* 高亮框 */
+        .highlight-box {
+            background: linear-gradient(135deg, #FF6B35 0%, #ff8c5a 100%);
+            color: white;
+            padding: 1cm;
+            border-radius: 8px;
+            margin: 1.5cm 0;
+            page-break-inside: avoid;
+        }
+
+        .highlight-box h4 {
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+            margin-bottom: 0.5cm;
+        }
+
+        /* 引用框 */
+        .citation-box {
+            background: #EFEFD0;
+            border-left: 4px solid #2D3047;
+            padding: 0.8cm 1cm;
+            margin: 1.5cm 0;
+            border-radius: 0 8px 8px 0;
+            page-break-inside: avoid;
+        }
+
+        .citation-box p {
+            margin-bottom: 0;
+            font-style: italic;
+            font-size: 10pt;
+        }
+
+        /* 类比框 */
+        .analogy-box {
+            background: linear-gradient(135deg, #F7C59F 0%, #fff 50%);
+            border-radius: 8px;
+            padding: 1cm;
+            margin: 1.5cm 0;
+            page-break-inside: avoid;
+        }
+
+        .analogy-box h4 {
+            color: #FF6B35;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5cm;
+        }
+
+        /* 图片 */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1cm auto;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8cm;
+            margin: 1.5cm 0;
+        }
+
+        .image-grid img {
+            margin: 0;
+        }
+
+        .image-caption {
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+            margin-top: 0.3cm;
+        }
+
+        /* 层级解释 */
+        .layer-explanation {
+            margin: 1cm 0;
+            padding-left: 0.8cm;
+            border-left: 2px solid #F7C59F;
+        }
+
+        .layer-label {
+            display: inline-block;
+            font-size: 8pt;
+            padding: 0.15cm 0.5cm;
+            border-radius: 15px;
+            margin-bottom: 0.3cm;
+            font-weight: bold;
+        }
+
+        .layer-1 { border-color: #4CAF50; }
+        .layer-1 .layer-label { background: #E8F5E9; color: #2E7D32; }
+
+        .layer-2 { border-color: #2196F3; }
+        .layer-2 .layer-label { background: #E3F2FD; color: #1565C0; }
+
+        .layer-3 { border-color: #9C27B0; }
+        .layer-3 .layer-label { background: #F3E5F5; color: #7B1FA2; }
+
+        /* 摘要框 */
+        .abstract-box {
+            background: #F5F5F5;
+            padding: 1cm;
+            border-radius: 8px;
+            margin: 1.5cm 0;
+        }
+
+        .abstract-box h4 {
+            font-size: 10pt;
+            color: #666;
+            margin-bottom: 0.5cm;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* 影响卡片 */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8cm;
+            margin: 1.5cm 0;
+        }
+
+        .impact-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 0.8cm;
+            text-align: center;
+        }
+
+        .impact-icon {
+            font-size: 24pt;
+            margin-bottom: 0.3cm;
+        }
+
+        .impact-card h4 {
+            font-size: 11pt;
+            margin-bottom: 0.3cm;
+        }
+
+        .impact-card p {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 0;
+        }
+
+        /* 总结框 */
+        .summary-box {
+            background: linear-gradient(135deg, #2D3047 0%, #4a4f6e 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 1.5cm;
+            margin: 2cm 0;
+            text-align: center;
+        }
+
+        .summary-box h3 {
+            font-size: 14pt;
+            margin-bottom: 1cm;
+            border: none;
+            padding: 0;
+            color: white;
+        }
+
+        .takeaways {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5cm;
+            margin-top: 1cm;
+        }
+
+        .takeaway {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.4cm 0.8cm;
+            border-radius: 20px;
+            font-size: 10pt;
+        }
+
+        /* 页脚 */
+        .footer {
+            position: fixed;
+            bottom: 1cm;
+            left: 2cm;
+            right: 2cm;
+            text-align: center;
+            font-size: 9pt;
+            color: #999;
+        }
+
+        @page {
+            margin: 0;
+            @bottom-right {
+                content: counter(page);
+                font-size: 9pt;
+                color: #999;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 封面页 -->
+    <div class="cover-page">
+        <h1>思维链提示在大语言模型中引出推理能力</h1>
+        <p class="subtitle">Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</p>
+        <div class="meta">
+            Jason Wei (Google Research)<br>Xuezhi Wang (Google Research)<br>Dale Schuurmans (Google Research)
+            <br><br>
+            2026-01-17
+        </div>
+        <p class="paper-id">arXiv:2501.12345</p>
+    </div>
+
+    <!-- 目录页 -->
+    <div class="toc-page">
+        <h2 class="toc-title">目录</h2>
+        <div class="toc-item level-2"><span>引子</span><span class="toc-dots"></span><span>1</span></div><div class="toc-item level-2"><span>核心发现</span><span class="toc-dots"></span><span>2</span></div><div class="toc-item level-3"><span>z1类比：让AI学会"思考"思维链的本质是什么？</span><span class="toc-dots"></span><span>3</span></div><div class="toc-item level-2"><span>技术细节</span><span class="toc-dots"></span><span>4</span></div><div class="toc-item level-3"><span>L1: 直观理解（说人话）</span><span class="toc-dots"></span><span>5</span></div><div class="toc-item level-3"><span>L2: 技术原理（怎么做到的）</span><span class="toc-dots"></span><span>6</span></div><div class="toc-item level-3"><span>L3: 数学基础（公式化表达）</span><span class="toc-dots"></span><span>7</span></div><div class="toc-item level-2"><span>现实意义</span><span class="toc-dots"></span><span>8</span></div><div class="toc-item level-3"><span>🎓 教育领域</span><span class="toc-dots"></span><span>9</span></div><div class="toc-item level-3"><span>🏥 医疗诊断</span><span class="toc-dots"></span><span>10</span></div><div class="toc-item level-3"><span>💼 商业决策</span><span class="toc-dots"></span><span>11</span></div><div class="toc-item level-3"><span>⚠️ 局限性</span><span class="toc-dots"></span><span>12</span></div><div class="toc-item level-2"><span>总结</span><span class="toc-dots"></span><span>13</span></div>
+    </div>
+
+    <!-- 内容页 -->
+    <div class="content">
+        <section class="content-block"><h2>引子</h2><p>你是否有这样的经历：对着AI说"帮我写首诗"，它能给你一段漂亮的文字；但当你问"怎么解这道数学应用题"时，它却给出一个看似对但完全不通的答案？</p><p>这背后的原因很残酷——AI在"直觉"方面很强，但在"推理"方面曾经是个小白。</p><p>但2022年，谷歌研究团队发现了一个神奇的技巧：**思维链提示 (Chain-of-Thought Prompting)**，它让AI的推理能力产生了质的飞跃。</p></section>
+<section class="content-block"><h2>核心发现</h2><p>**思维链提示是什么？** 简单来说，就是在问问题之前，先给AI一个"思考示例"。</p><p>> 比如你想让AI算"小明有15个苹果，送给小红7个，又买了5个，现在有多少个？"</p><p>> 普通问法直接给答案；但思维链问法会先示范：</p><p>> "小明有15个苹果，送给小红7个，剩下15-7=8个，又买了5个，现在有8+5=13个。"</p><p>> 然后让AI照这个格式回答。</p><p>实验结果令人震惊：</p><p>- **算术推理**准确率提升高达50%以上</p><p>- **常识推理**任务中，540B参数的大模型甚至超越了微调模型</p><p>- 最关键的是：**无需任何模型训练，只需修改提示词**</p><h3>z1类比：让AI学会"思考"思维链的本质是什么？</h3><p>            想象你在教一个孩子解数学题。普通方式你只给答案，而思维链就像是你一步步解释：</p><p>            "首先，我们要把14分成10和4，然后4乘以7得28，再加上10乘以7的70..."</p><p>            每一步都清晰可见，错误也更容易被发现。</p><p>            这正是思维链提示在做的事情——让AI把思考过程"说出来"，而不是只给最终答案。</p></section>
+<section class="content-block"><div class="images-grid">
+                <div class="image-card">
+                    <img src="images\2501.12345_1.png" alt="引人入胜的视觉隐喻">
+                    <div class="image-caption">引人入胜的视觉隐喻</div>
+                </div>
+                <div class="image-card">
+                    <img src="images\2501.12345_2.png" alt="核心概念可视化">
+                    <div class="image-caption">核心概念可视化</div>
+                </div>
+                <div class="image-card">
+                    <img src="images\2501.12345_3.png" alt="技术架构图">
+                    <div class="image-caption">技术架构图</div>
+                </div>
+                <div class="image-card">
+                    <img src="images\2501.12345_4.png" alt="现实应用场景">
+                    <div class="image-caption">现实应用场景</div>
+                </div>
+                <div class="image-card">
+                    <img src="images\2501.12345_5.png" alt="总结性抽象艺术">
+                    <div class="image-caption">总结性抽象艺术</div>
+                </div></div></section>
+<section class="content-block"><h2>技术细节</h2><h3>L1: 直观理解（说人话）</h3><p>**思维链**就像是你在做数学应用题时的**草稿纸**。</p><p>想象你让学生算"小明有5个苹果，又买了3个，总共几个？"：</p><p>- 不写步骤的学生：直接在脑中算出8个（但你不知道他是怎么算的）</p><p>- 写步骤的学生：5 + 3 = 8（每一步都清晰可见）</p><p>AI也是一样。普通提示下，AI直接在"脑中"给出答案；</p><p>思维链提示下，AI会把每一步推理都写出来，就像学生在草稿纸上列算式一样。</p><h3>L2: 技术原理（怎么做到的）</h3><p>思维链提示的技术原理涉及三个关键要素：</p><p><strong>1. 显式推理步骤</strong></p><p>通过在提示中展示`<思考过程>`，让模型学会生成中间推理步骤。</p><p>这相当于给模型提供了一个"思考模板"。</p><p><strong>2. 自我一致性</strong></p><p>模型在生成答案时会"思考多条路径"，然后通过投票选择最一致的答案。</p><p>这就像你做题时会检查好几种解法是否得到相同结果。</p><p><strong>3. 涌现能力</strong></p><p>研究表明，只有当模型规模足够大时（约100B参数以上），</p><p>思维链提示才会展现出显著效果——这是一种"涌现现象"。</p><h3>L3: 数学基础（公式化表达）</h3><p>从形式化角度来看，思维链改变了问题的条件概率分布：</p><p>给定输入x，模型需要生成输出y。普通提示要求：</p><p>$$P(y|x)$$</p><p>思维链提示引入中间变量c（chain/chain of thought）：</p><p>$$P(y,c|x) = P(y|c,x) \cdot P(c|x)$$</p><p>通过边缘化所有可能的中间步骤：</p><p>$$P(y|x) = \sum_c P(y|c,x) \cdot P(c|x)$$</p><p>这使得模型可以在生成最终答案前，先"采样"出合理的推理路径c，</p><p>从而提升复杂推理任务的条件概率估计准确性。</p></section>
+<section class="content-block"><h2>现实意义</h2><h3>🎓 教育领域</h3><p>思维链提示可以被用来**教AI当老师**：</p><p>- AI可以生成带解题步骤的教程</p><p>- 学生可以看到"AI是怎么思考的"</p><p>- 个性化辅导成为可能</p><h3>🏥 医疗诊断</h3><p>在医疗场景中，AI可以：</p><p>- 展示诊断推理的每一步</p><p>- 医生可以审核AI的"思考过程"</p><p>- 减少AI给出错误结论的风险</p><h3>💼 商业决策</h3><p>企业可以用AI进行：</p><p>- 财务分析的步骤展示</p><p>- 风险评估的透明化</p><p>- 让非技术人员理解AI的建议</p><h3>⚠️ 局限性</h3><p>需要注意的是，思维链并非万能药：</p><p>- 对简单问题可能**过度思考**</p><p>- 可能会生成**看似合理但错误**的推理步骤</p><p>- 在事实性知识上可能产生幻觉</p></section>
+<section class="content-block"><h2>总结</h2><p>**核心启示**：提示工程本身就是一种"编程"。</p><p>思维链提示证明了：**如何提问，比模型本身更重要。**</p><p>这开启了一个全新的研究方向——**提示工程 (Prompt Engineering)**，</p><p>它不需要修改模型权重，就能解锁AI的各种能力。</p><p>记住这个公式：</p><p>> **好提示 = 清晰目标 + 示范示例 + 思考空间**</p><p>下次当你觉得AI"不够聪明"时，不妨想想：是不是我的提示不够好？</p><p>---</p><p>*本文由 Claude Agent 自动生成，基于 arXiv 论文解读*</p></section>
+    </div>
+</body>
+</html>

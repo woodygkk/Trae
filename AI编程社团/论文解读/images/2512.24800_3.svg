@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D3047;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#FFFAF6;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#grad3)"/>
+  <rect x="100" y="100" width="824" height="824" fill="none" stroke="#2D3047" stroke-width="3" rx="20"/>
+  <text x="512" y="450" font-family="Noto Sans SC, sans-serif" font-size="48" fill="#2D3047" text-anchor="middle" font-weight="bold">S-素理想研究</text>
+  <text x="512" y="530" font-family="Noto Sans SC, sans-serif" font-size="36" fill="#2D3047" text-anchor="middle">技术细节 - 局部化与证明</text>
+  <text x="512" y="650" font-family="Noto Sans SC, sans-serif" font-size="28" fill="#666" text-anchor="middle">Paper: 2512.24800</text>
+  <circle cx="512" cy="780" r="60" fill="#2D3047" opacity="0.3"/>
+</svg>
